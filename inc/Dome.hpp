@@ -4,6 +4,8 @@
 #include <cstdint>
 
 //Domes
+#include "Domes/inc/Node.hpp"
+#include "Domes/inc/Element.hpp"
 #include "Domes/inc/Section.hpp"
 #include "Domes/inc/Material.hpp"
 
@@ -23,11 +25,14 @@ public:
 	double radius(double);
 	double radius(void) const;
 
-	uint32_t order(uint32_t);
-	uint32_t order(void) const;
+	uint32_t sides(uint32_t);
+	uint32_t sides(void) const;
 
 	uint32_t layers(uint32_t);
 	uint32_t layers(void) const;
+
+	Node& node(uint32_t);
+	const Node& node(uint32_t) const;
 
 	Section& section(void);
 	const Section& section(void) const;
@@ -35,12 +40,25 @@ public:
 	Material& material(void);
 	const Material& material(void) const;
 
+	Element& element(uint32_t);
+	const Element& element(uint32_t) const;
+
 private:
+	//analysis
+	void setup_nodes(void);
+	void setup_elements(void);
+
 	//data
 	double m_height;
 	double m_radius;
-	uint32_t m_order;
+	uint32_t m_sides;
 	uint32_t m_layers;
+
+	Node* m_nodes;
 	Section m_section;
+	Element* m_elements;
 	Material m_material;
+
+	double(*m_twist)(double, double);
+	double(*m_shape)(double, double, double);
 };
