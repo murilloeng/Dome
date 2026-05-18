@@ -1,14 +1,130 @@
 //Dome
-#include "Domes/inc/Draw.hpp"
+#include "Dome/inc/Draw.hpp"
+
+//Canvas
+#include "Canvas/inc/Vertices/Model3D.hpp"
 
 //constructor
-Draw::Draw(void)
+Draw::Draw(Dome* dome) : m_dome{dome}
 {
 	return;
 }
 
 //constructor
 Draw::~Draw(void)
+{
+	return;
+}
+
+//draw
+void Draw::draw(void)
+{
+	//data
+	const uint64_t offset_1 = m_counter_points * sizeof(uint32_t);
+	// const uint64_t offset_2 = offset_1 + m_counter_lines * sizeof(uint32_t);
+	//draw
+	m_vao.bind();
+	m_shader.bind();
+	glDrawElements(GL_POINTS, m_counter_points, GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_LINES, m_counter_lines, GL_UNSIGNED_INT, (void*) offset_1);
+	// glDrawElements(GL_TRIANGLES, m_counter_triangles, GL_UNSIGNED_INT, (void*) offset_2);
+}
+void Draw::setup(void)
+{
+	//data
+	m_counter_lines = 0;
+	m_counter_points = 0;
+	m_counter_vertices = 0;
+	m_counter_triangles = 0;
+	//setup
+	setup_nodes();
+	setup_elements();
+	setup_supports();
+	//allocate
+	m_vbo.allocate(m_counter_vertices);
+	m_ibo.allocate(m_counter_points + m_counter_lines + m_counter_triangles);
+}
+void Draw::update(void)
+{
+	//data
+	m_index_lines = 0;
+	m_index_points = 0;
+	m_index_vertices = 0;
+	m_index_triangles = 0;
+	//update
+	update_nodes();
+	update_elements();
+	update_supports();
+	//transfer
+	m_vbo.transfer();
+	m_ibo.transfer();
+}
+
+//setup
+void Draw::setup_nodes(void)
+{
+	//data
+	const uint32_t nn = m_dome->nodes();
+	//setup
+	m_counter_points += nn;
+	m_counter_vertices += nn;
+}
+void Draw::setup_elements(void)
+{
+	//data
+	const uint32_t nn = m_dome->nodes();
+	const uint32_t ne = m_dome->elements();
+	//setup
+	m_counter_vertices += nn;
+	m_counter_lines += 2 * ne;
+}
+void Draw::setup_supports(void)
+{
+	return;
+}
+
+//update
+void Draw::update_nodes(void)
+{
+	//data
+	const uint32_t nn = m_dome->nodes();
+	uint32_t* ibo_ptr = m_ibo.data() + m_index_points;
+	canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+	//buffers data
+	for(uint32_t i = 0; i < nn; i++)
+	{
+		ibo_ptr[i] = i;
+		vbo_ptr[i].m_color = "red";
+		vbo_ptr[i].m_position = m_dome->node(i).position();
+	}
+	//update
+	m_index_points += nn;
+	m_index_vertices += nn;
+}
+void Draw::update_elements(void)
+{
+	//data
+	const uint32_t nn = m_dome->nodes();
+	const uint32_t ne = m_dome->elements();
+	uint32_t* ibo_ptr = m_ibo.data() + m_counter_points + m_index_lines;
+	canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+	//vbo data
+	for(uint32_t i = 0; i < nn; i++)
+	{
+		vbo_ptr[i].m_color = "blue";
+		vbo_ptr[i].m_position = m_dome->node(i).position();
+	}
+	//ibo data
+	for(uint32_t i = 0; i < ne; i++)
+	{
+		ibo_ptr[2 * i + 0] = m_index_vertices + m_dome->element(i).node(0);
+		ibo_ptr[2 * i + 1] = m_index_vertices + m_dome->element(i).node(1);
+	}
+	//update
+	m_index_vertices += nn;
+	m_index_lines += 2 * ne;
+}
+void Draw::update_supports(void)
 {
 	return;
 }

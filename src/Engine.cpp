@@ -3,14 +3,14 @@
 #include <thread>
 #include <stdexcept>
 
-//Domes
-#include "Domes/inc/Engine.hpp"
+//Dome
+#include "Dome/inc/Engine.hpp"
 
 //Canvas
 #include "Canvas/inc/API/Loader.hpp"
 
 //constructor
-Engine::Engine(void) : m_playing{false}, m_show_fps{true}, m_framerate{60}
+Engine::Engine(void) : m_dome{nullptr}, m_draw{nullptr}, m_playing{false}, m_show_fps{true}, m_framerate{60}, m_scene{nullptr}
 {
 	setup_glfw();
 	setup_model();
@@ -21,7 +21,7 @@ Engine::Engine(void) : m_playing{false}, m_show_fps{true}, m_framerate{60}
 //destructor
 Engine::~Engine(void)
 {
-	delete m_draw;
+	delete m_dome;
 	delete m_scene;
 	glfwTerminate();
 }
@@ -29,8 +29,14 @@ Engine::~Engine(void)
 //start
 void Engine::start(void)
 {
+	//time
 	glfwSetTime(0);
 	float t1 = 0, t2;
+	//start
+	m_dome->setup();
+	m_scene->setup();
+	m_scene->update();
+	m_scene->camera().bound();
 	while(!glfwWindowShouldClose(m_window))
 	{
 		//time
@@ -60,6 +66,11 @@ void Engine::start(void)
 }
 
 //data
+Dome* Engine::dome(void)
+{
+	return m_dome;
+}
+
 bool Engine::show_fps(void) const
 {
 	return m_show_fps;
@@ -91,7 +102,7 @@ void Engine::setup_glfw(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	m_window = glfwCreateWindow(900, 900, "Canvas", nullptr, nullptr);
+	m_window = glfwCreateWindow(900, 900, "Dome", nullptr, nullptr);
 	if(!m_window)
 	{
 		glfwTerminate();
@@ -106,34 +117,16 @@ void Engine::setup_glfw(void)
 }
 void Engine::setup_model(void)
 {
-	//data
-	char path[512];
-	m_model = new fea::models::Model;
-	FILE* file = fopen(".recent", "r");
-	//check
-	if(!file) return;
-	if(!fgets(path, 512, file)) return;
-	//load
-	m_model->load(path);
-	m_model->load_results();
-	//close
-	fclose(file);
+	m_dome = new Dome;
 }
 void Engine::setup_scene(void)
 {
 	//scene
 	m_scene = new canvas::Scene;
-	canvas::shaders::Shader::add_path("../../Canvas/shd/");
+	canvas::shaders::Shader::add_path("../Canvas/shd/");
 	//objects
-	m_draw = new Draw;
-	m_draw->model(m_model);
-	m_draw->compute_bounding_boxes();
+	m_draw = new Draw(m_dome);
 	m_scene->add_object(m_draw);
-	//camera
-	m_scene->setup();
-	m_scene->update();
-	m_scene->camera().fixed_bounding_box(true);
-	m_scene->camera().bounding_box(m_draw->bounding_box());
 	//screen
 	int32_t width, height;
 	glfwGetWindowSize(m_window, &width, &height);
@@ -150,41 +143,6 @@ void Engine::setup_callbacks(void)
 }
 
 //step
-void Engine::update_model(GLFWwindow* window)
-{
-	//data
-	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//setup
-	string = engine->m_model->path();
-	rl_startup_hook = readline_start;
-	rl_basic_quote_characters = const_cast<char*>("\"'");
-	rl_filename_quote_characters = const_cast<char*>(" ");
-	rl_completer_quote_characters = const_cast<char*>("\"'");
-	//input
-	char* input = readline("Enter model path: ");
-	//file
-	readline_path_fix(input);
-	FILE* file = fopen(".recent", "w");
-	fprintf(file, "%s", input);
-	fclose(file);
-	//model
-	delete engine->m_model;
-	engine->m_model = new fea::models::Model;
-	//load
-	engine->m_model->load(input);
-	engine->m_model->load_results();
-	engine->m_draw->model(engine->m_model);
-	//scene
-	engine->m_scene->setup();
-	engine->m_scene->update();
-	//camera
-	engine->m_scene->camera().bounding_box(engine->m_draw->bounding_box());
-	engine->m_scene->camera().bound();
-	//focus
-	glfwFocusWindow(window);
-	//delete
-	free(input);
-}
 void Engine::update_playing(GLFWwindow* window)
 {
 	//data
@@ -194,49 +152,17 @@ void Engine::update_playing(GLFWwindow* window)
 }
 void Engine::update_step(GLFWwindow * window, bool increase)
 {
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//step
-	const uint32_t step_1 = engine->m_draw->step();
-	const uint32_t steps = engine->m_model->results()->steps();
-	const uint32_t step_2 = increase ? (step_1 + 1) % (steps + 1) : step_1 != 0 ? step_1 - 1 : steps;
-	//draw
-	engine->m_draw->step(step_2);
-	if(!engine->m_show_fps) printf("step: %d\n", step_2);
-	//update
-	engine->m_scene->update();
-}
-void Engine::update_type(GLFWwindow* window, bool increase)
-{
-	//engine
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//data
-	const Mode mode = engine->m_draw->mode();
-	const uint32_t dof_set = engine->m_model->results()->dof_set();
-	const uint64_t state_set = engine->m_model->results()->state_set();
-	//mode
-	if(mode == Mode::Nodes)
-	{
-		//data
-		const uint32_t count = math::bit_count(dof_set);
-		const uint32_t index_1 = engine->m_draw->what().dof_index();
-		const uint32_t index_2 = increase ? (index_1 + 1) % count : index_1 != 0 ? index_1 - 1 : count - 1;
-		//update
-		engine->m_draw->what().dof_index(index_2);
-		if(!engine->m_show_fps) printf("DOF: %s\n", engine->m_draw->what().dof_name(dof_set));
-	}
-	else if(mode == Mode::Elements)
-	{
-		//data
-		const uint32_t count = math::bit_count(state_set);
-		const uint32_t index_1 = engine->m_draw->what().state_index();
-		const uint32_t index_2 = increase ? (index_1 + 1) % count : index_1 != 0 ? index_1 - 1 : count - 1;
-		//update
-		engine->m_draw->what().state_index(index_2);
-		if(!engine->m_show_fps) printf("State: %s\n", engine->m_draw->what().state_name(state_set));
-	}
-	//update
-	engine->m_scene->update();
+	// //data
+	// const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
+	// //step
+	// const uint32_t step_1 = engine->m_draw->step();
+	// const uint32_t steps = engine->m_model->results()->steps();
+	// const uint32_t step_2 = increase ? (step_1 + 1) % (steps + 1) : step_1 != 0 ? step_1 - 1 : steps;
+	// //draw
+	// engine->m_draw->step(step_2);
+	// if(!engine->m_show_fps) printf("step: %d\n", step_2);
+	// //update
+	// engine->m_scene->update();
 }
 void Engine::update_framerate(GLFWwindow* window, bool increase)
 {
@@ -245,88 +171,6 @@ void Engine::update_framerate(GLFWwindow* window, bool increase)
 	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
 	//framerate
 	engine->m_framerate *= increase ? factor : 1 / factor;
-}
-
-void Engine::update_what_edges(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->what().edges(!engine->m_draw->what().edges());
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-void Engine::update_what_faces(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->what().faces(!engine->m_draw->what().faces());
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-void Engine::update_what_volume(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->what().volume(!engine->m_draw->what().volume());
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-
-void Engine::update_mode_mesh(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->mode(Mode::Mesh);
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-void Engine::update_mode_nodes(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->mode(Mode::Nodes);
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-void Engine::update_mode_elements(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->mode(Mode::Elements);
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-void Engine::update_mode_deformed(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->mode(Mode::Deformed);
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
-}
-void Engine::update_mode_geometry(GLFWwindow* window)
-{
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//edges
-	engine->m_draw->mode(Mode::Geometry);
-	//update
-	engine->m_scene->setup();
-	engine->m_scene->update();
 }
 
 //canvas
@@ -414,26 +258,11 @@ void Engine::callback_keyboard(GLFWwindow* window, int32_t key, int32_t scancode
 	const bool control = mods & GLFW_MOD_CONTROL;
 	const char* name = glfwGetKeyName(key, 0);
 	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//model
-	if(control && key == GLFW_KEY_O) update_model(window);
 	//play
-	else if(shift && key == GLFW_KEY_P) update_playing(window);
-	//type
-	else if(shift && key == GLFW_KEY_UP) update_type(window, true);
-	else if(shift && key == GLFW_KEY_DOWN) update_type(window, false);
+	if(shift && key == GLFW_KEY_P) update_playing(window);
 	//step
 	else if(shift && key == GLFW_KEY_LEFT) update_step(window, false);
 	else if(shift && key == GLFW_KEY_RIGHT) update_step(window, true);
-	//what
-	else if(control && key == GLFW_KEY_E) update_what_edges(window);
-	else if(control && key == GLFW_KEY_F) update_what_faces(window);
-	else if(control && key == GLFW_KEY_V) update_what_volume(window);
-	//mode
-	else if(shift && key == GLFW_KEY_M) update_mode_mesh(window);
-	else if(shift && key == GLFW_KEY_N) update_mode_nodes(window);
-	else if(shift && key == GLFW_KEY_E) update_mode_elements(window);
-	else if(shift && key == GLFW_KEY_D) update_mode_deformed(window);
-	else if(shift && key == GLFW_KEY_G) update_mode_geometry(window);
 	//framerate
 	else if(shift && key == GLFW_KEY_S) update_framerate(window, true);
 	else if(control && key == GLFW_KEY_S) update_framerate(window, false);

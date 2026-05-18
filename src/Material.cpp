@@ -1,5 +1,5 @@
-//Domes
-#include "Domes/inc/Material.hpp"
+//Dome
+#include "Dome/inc/Material.hpp"
 
 //constructor
 Material::Material(void) : m_density{7.85e+03}, m_yield_stress{4.40e+08}, m_elastic_modulus{2.10e+11}, m_plastic_modulus{8.00e+09}

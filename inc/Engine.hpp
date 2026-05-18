@@ -3,8 +3,9 @@
 //glfw
 #include <GLFW/glfw3.h>
 
-//Domes
-#include "Domes/inc/Draw.hpp"
+//Dome
+#include "Dome/inc/Dome.hpp"
+#include "Dome/inc/Draw.hpp"
 
 //Canvas
 #include "Canvas/inc/Scene/Scene.hpp"
@@ -23,6 +24,8 @@ public:
 	void start(void);
 
 	//data
+	Dome* dome(void);
+
 	bool show_fps(bool);
 	bool show_fps(void) const;
 
@@ -37,7 +40,6 @@ private:
 	void setup_callbacks(void);
 
 	//update
-	static void update_model(GLFWwindow*);
 	static void update_playing(GLFWwindow*);
 	static void update_step(GLFWwindow*, bool);
 	static void update_framerate(GLFWwindow*, bool);
@@ -54,6 +56,7 @@ private:
 	static void callback_keyboard(GLFWwindow*, int32_t, int32_t, int32_t, int32_t);
 
 	//data
+	Dome* m_dome;
 	Draw* m_draw;
 	bool m_playing;
 	bool m_show_fps;

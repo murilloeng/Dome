@@ -1,5 +1,5 @@
-//Domes
-#include "Domes/inc/Element.hpp"
+//Dome
+#include "Dome/inc/Element.hpp"
 
 //constructor
 Element::Element(void) : m_nodes{0, 0}

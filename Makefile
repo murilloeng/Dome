@@ -1,6 +1,6 @@
 #compiler
 CXX = g++
-LIBS = -l GL -l freetype
+LIBS = -l GL -l freetype -l glfw
 INCS = -I .. -I /usr/include/freetype2
 WARS = -Wall -Werror -Wno-unused-result
 CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
@@ -22,7 +22,7 @@ ifeq ($(p), 1)
 endif
 
 #output
-out = dist/$(prof_dir)$(mode)/domes.out
+out = dist/$(prof_dir)$(mode)/dome.out
 
 #libraries
 libMath = ../Math/dist/$(mode)/libmath.so

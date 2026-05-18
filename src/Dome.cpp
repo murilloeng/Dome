@@ -2,8 +2,8 @@
 #include <cmath>
 #include <cstdio>
 
-//Domes
-#include "Domes/inc/Dome.hpp"
+//Dome
+#include "Dome/inc/Dome.hpp"
 
 //static
 static double default_twist(double Hi, double Ht)
@@ -67,6 +67,23 @@ uint32_t Dome::layers(uint32_t layers)
 	return m_layers = layers;
 }
 
+uint32_t Dome::nodes(void) const
+{
+	//data
+	const uint32_t ns = m_sides;
+	const uint16_t nl = m_layers;
+	//return
+	return ns * nl + 1;
+}
+uint32_t Dome::elements(void) const
+{
+	//data
+	const uint32_t ns = m_sides;
+	const uint16_t nl = m_layers;
+	//return
+	return 2 * ns * nl;
+}
+
 Node& Dome::node(uint32_t index)
 {
 	return m_nodes[index];
@@ -107,10 +124,8 @@ const Element& Dome::element(uint32_t index) const
 void Dome::save(const char* path) const
 {
 	//data
-	const uint32_t ns = m_sides;
-	const uint32_t nl = m_layers;
-	const uint32_t nn = nl * ns + 1;
-	const uint32_t ne = 2 * nl * ns;
+	const uint32_t nn = nodes();
+	const uint32_t ne = elements();
 	//open
 	FILE* file = fopen(path, "w");
 	//nodes

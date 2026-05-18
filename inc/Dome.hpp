@@ -3,11 +3,11 @@
 //std
 #include <cstdint>
 
-//Domes
-#include "Domes/inc/Node.hpp"
-#include "Domes/inc/Element.hpp"
-#include "Domes/inc/Section.hpp"
-#include "Domes/inc/Material.hpp"
+//Dome
+#include "Dome/inc/Node.hpp"
+#include "Dome/inc/Element.hpp"
+#include "Dome/inc/Section.hpp"
+#include "Dome/inc/Material.hpp"
 
 class Dome
 {
@@ -24,12 +24,15 @@ public:
 	
 	double radius(double);
 	double radius(void) const;
-
+	
 	uint32_t sides(uint32_t);
 	uint32_t sides(void) const;
-
+	
 	uint32_t layers(uint32_t);
 	uint32_t layers(void) const;
+
+	uint32_t nodes(void) const;
+	uint32_t elements(void) const;
 
 	Node& node(uint32_t);
 	const Node& node(uint32_t) const;

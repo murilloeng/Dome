@@ -1,5 +1,5 @@
-//Domes
-#include "Domes/inc/Section.hpp"
+//Dome
+#include "Dome/inc/Section.hpp"
 
 //constructor
 Section::Section(void) : m_area{1.37e-04}, m_inertia{6.29e-09}

@@ -19,15 +19,19 @@ public:
 
 	double state(uint32_t) const;
 	double state(uint32_t, double);
+	const double* state(void) const;
 
 	double position(uint32_t) const;
 	double position(uint32_t, double);
+	const double* position(void) const;
 
 	double velocity(uint32_t) const;
 	double velocity(uint32_t, double);
+	const double* velocity(void) const;
 
 	double acceleration(uint32_t) const;
 	double acceleration(uint32_t, double);
+	const double* acceleration(void) const;
 
 private:
 	//data
