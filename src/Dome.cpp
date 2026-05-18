@@ -181,14 +181,17 @@ void Dome::solve_static(void)
 	const uint32_t ne = elements();
 	const uint32_t nu = dof_unkown();
 	math::solvers::newton_raphson solver;
-	//solver
-	solver.m_size = nu;
+	//setup
 	solver.cleanup();
-	solver.allocate();
+	solver.allocate(nu);
+	//solver
 	solver.m_p_new = 0;
 	solver.m_watch_dof = nu - 1;
+	solver.m_stop_criteria.m_x_min = -m_height;
 	memset(solver.m_fe, 0, nu * sizeof(double));
 	memset(solver.m_x_new, 0, nu * sizeof(double));
+	solver.m_continuation.m_type = math::solvers::continuation::type::control_state;
+	//system
 	solver.m_system_1 = [this, ne, nu](double* f, double* K, const double* x)
 	{
 		//setup
