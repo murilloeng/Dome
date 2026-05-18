@@ -1,8 +1,8 @@
 #compiler
 CXX = g++
-INCS = -I ..
+LIBS = -l GL -l freetype
+INCS = -I .. -I /usr/include/freetype2
 WARS = -Wall -Werror -Wno-unused-result
-LIBS = -l umfpack -l openblas -l quadrule -l fftw3
 CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
 #mode
@@ -25,7 +25,8 @@ endif
 out = dist/$(prof_dir)$(mode)/domes.out
 
 #libraries
-lib_math = ../Math/dist/$(mode)/libmath.so
+libMath = ../Math/dist/$(mode)/libmath.so
+libCanvas = ../Canvas/dist/$(mode)/libcanvas.so
 
 #sources
 src := $(sort $(shell find -path './src/*.cpp'))
@@ -45,15 +46,18 @@ run : exe
 debug : exe
 	gdb ./$(out)
 
-exe : math $(out)
+exe : math canvas $(out)
 	@echo 'executable build - $(mode): complete!'
 
 math : 
 	+@cd ../Math && $(MAKE) -f Makefile m=$m
 
+canvas : 
+	+@cd ../Math && $(MAKE) -f Makefile m=$m
+
 $(out) : $(obj)
 	@mkdir -p $(dir $@)
-	@$(CXX) $(LNKFLAGS) -o $(out) $(obj) $(lib_math) $(LIBS)
+	@$(CXX) $(LNKFLAGS) -o $(out) $(obj) $(libMath) $(libCanvas) $(LIBS)
 	@echo 'executable - $(mode): $@'
 
 build/$(prof_dir)$(mode)/%.o : src/%.cpp build/$(prof_dir)$(mode)/%.d
