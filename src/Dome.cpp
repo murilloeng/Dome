@@ -186,6 +186,7 @@ void Dome::solve_static(void)
 	solver.allocate(nu);
 	//solver
 	solver.m_p_new = 0;
+	solver.m_dp0 = 0.01;
 	solver.m_watch_dof = nu - 1;
 	solver.m_stop_criteria.m_x_min = -m_height;
 	memset(solver.m_fe, 0, nu * sizeof(double));
