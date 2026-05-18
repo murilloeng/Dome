@@ -1,8 +1,9 @@
 //Dome
+#include "Dome/inc/Dome.hpp"
 #include "Dome/inc/Node.hpp"
 
 //constructor
-Node::Node(void) : m_dof{0, 0, 0}, m_state{0, 0, 0}, m_position{0, 0, 0}, m_velocity{0, 0, 0}, m_acceleration{0, 0, 0}
+Node::Node(void) : m_dof{0, 0, 0}, m_position{0, 0, 0}
 {
 	return;
 }
@@ -18,18 +19,9 @@ uint32_t Node::dof(uint32_t index) const
 {
 	return m_dof[index];
 }
-
-double Node::state(uint32_t index) const
+const uint32_t* Node::dof(void) const
 {
-	return m_state[index];
-}
-double Node::state(uint32_t index, double state)
-{
-	return m_state[index] = state;
-}
-const double* Node::state(void) const
-{
-	return m_state;
+	return m_dof;
 }
 
 double Node::position(uint32_t index) const
@@ -44,29 +36,17 @@ const double* Node::position(void) const
 {
 	return m_position;
 }
-
-double Node::velocity(uint32_t index) const
+math::vec3 Node::position(const double* x) const
 {
-	return m_velocity[index];
-}
-double Node::velocity(uint32_t index, double velocity)
-{
-	return m_velocity[index] = velocity;
-}
-const double* Node::velocity(void) const
-{
-	return m_velocity;
+	//data
+	const uint32_t nu = m_dome->dof_unkown();
+	//return
+	return {
+		m_position[0] + m_dof[0] < nu ? x[m_dof[0]] : 0,
+		m_position[1] + m_dof[1] < nu ? x[m_dof[1]] : 0,
+		m_position[2] + m_dof[2] < nu ? x[m_dof[2]] : 0
+	};
 }
 
-double Node::acceleration(uint32_t index) const
-{
-	return m_acceleration[index];
-}
-double Node::acceleration(uint32_t index, double acceleration)
-{
-	return m_acceleration[index] = acceleration;
-}
-const double* Node::acceleration(void) const
-{
-	return m_acceleration;
-}
+//static data
+Dome* Node::m_dome = nullptr;

@@ -3,6 +3,9 @@
 //std
 #include <cstdint>
 
+//Math
+#include "Math/inc/linear/vec3.hpp"
+
 class Dome;
 
 class Node
@@ -16,30 +19,19 @@ public:
 
 	//data
 	uint32_t dof(uint32_t) const;
-
-	double state(uint32_t) const;
-	double state(uint32_t, double);
-	const double* state(void) const;
+	const uint32_t* dof(void) const;
 
 	double position(uint32_t) const;
 	double position(uint32_t, double);
 	const double* position(void) const;
-
-	double velocity(uint32_t) const;
-	double velocity(uint32_t, double);
-	const double* velocity(void) const;
-
-	double acceleration(uint32_t) const;
-	double acceleration(uint32_t, double);
-	const double* acceleration(void) const;
+	math::vec3 position(const double*) const;
 
 private:
 	//data
+	static Dome* m_dome;
+
 	uint32_t m_dof[3];
-	double m_state[3];
 	double m_position[3];
-	double m_velocity[3];
-	double m_acceleration[3];
 
 	//friends
 	friend class Dome;

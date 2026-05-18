@@ -33,6 +33,7 @@ public:
 
 	uint32_t nodes(void) const;
 	uint32_t elements(void) const;
+	uint32_t dof_unkown(void) const;
 
 	Node& node(uint32_t);
 	const Node& node(uint32_t) const;

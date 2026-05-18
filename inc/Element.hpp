@@ -19,13 +19,17 @@ public:
 	uint32_t node(uint32_t, uint32_t);
 
 	//formulation
-	void inertia(double*) const;
-	void stiffness(double*) const;
-	void internal_force(double*) const;
+	void apply(const double*);
+	void inertia(double*, const double*) const;
+	void stiffness(double*, const double*) const;
+	void internal_force(double*, const double*) const;
 
 private:
 	//data
+	static Dome* m_dome;
+
 	uint32_t m_nodes[2];
+	double m_C, m_U, m_f, m_K;
 
 	//friends
 	friend class Dome;

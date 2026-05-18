@@ -20,7 +20,8 @@ Dome::Dome(void) :
 	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, 
 	m_nodes{nullptr}, m_elements{nullptr}, m_twist{default_twist}, m_shape{default_shape}
 {
-	return;
+	Node::m_dome = this;
+	Element::m_dome = this;
 }
 
 //destructor
@@ -82,6 +83,14 @@ uint32_t Dome::elements(void) const
 	const uint16_t nl = m_layers;
 	//return
 	return 2 * ns * nl;
+}
+uint32_t Dome::dof_unkown(void) const
+{
+	//data
+	const uint32_t ns = m_sides;
+	const uint32_t nl = m_layers;
+	//return
+	return 3 * (ns * (nl - 1) + 1);
 }
 
 Node& Dome::node(uint32_t index)
@@ -188,6 +197,7 @@ void Dome::setup_nodes(void)
 	const uint32_t ns = m_sides;
 	const uint32_t nl = m_layers;
 	const uint32_t nn = nl * ns + 1;
+	const uint32_t nu = dof_unkown();
 	//setup
 	uint32_t du = 0;
 	uint32_t dk = 0;
@@ -203,7 +213,7 @@ void Dome::setup_nodes(void)
 			m_nodes[i * ns + j].m_position[2] = Hi;
 			m_nodes[i * ns + j].m_position[0] = Ri * cos(2 * M_PI * j / ns + ti);
 			m_nodes[i * ns + j].m_position[1] = Ri * sin(2 * M_PI * j / ns + ti);
-			for(uint32_t k = 0; k < 3; k++) m_nodes[i * ns + j].m_dof[k] = i == 0 ? 3 * (nn - ns) + dk++ : du++;
+			for(uint32_t k = 0; k < 3; k++) m_nodes[i * ns + j].m_dof[k] = i == 0 ? nu + dk++ : du++;
 		}
 	}
 	m_nodes[nl * ns].m_position[0] = 0;

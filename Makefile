@@ -1,8 +1,8 @@
 #compiler
 CXX = g++
-LIBS = -l GL -l freetype -l glfw
+WARS = -Wall -Werror
 INCS = -I .. -I /usr/include/freetype2
-WARS = -Wall -Werror -Wno-unused-result
+LIBS = -l GL -l freetype -l glfw -l umfpack -l fftw3 -l quadrule
 CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
 #mode
