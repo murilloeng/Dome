@@ -43,6 +43,17 @@ public:
 	Element& element(uint32_t);
 	const Element& element(uint32_t) const;
 
+	//save
+	void save(const char*) const;
+
+	//analysis
+	void setup(void);
+	void solve_modal(void);
+	void solve_static(void);
+	void solve_dynamic(void);
+	void solve_buckling(void);
+	void solve_harmonic(void);
+
 private:
 	//analysis
 	void setup_nodes(void);

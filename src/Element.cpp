@@ -22,3 +22,17 @@ uint32_t Element::node(uint32_t index, uint32_t node)
 {
 	return m_nodes[index] = node;
 }
+
+//formulation
+void Element::inertia(double* M) const
+{
+	return;
+}
+void Element::stiffness(double* K) const
+{
+	return;
+}
+void Element::internal_force(double* f) const
+{
+	return;
+}
