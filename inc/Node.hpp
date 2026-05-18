@@ -3,6 +3,8 @@
 //std
 #include <cstdint>
 
+class Dome;
+
 class Node
 {
 public:
@@ -34,4 +36,7 @@ private:
 	double m_position[3];
 	double m_velocity[3];
 	double m_acceleration[3];
+
+	//friends
+	friend class Dome;
 };

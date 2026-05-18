@@ -60,6 +60,7 @@ private:
 	void setup_elements(void);
 
 	//data
+	bool m_solved;
 	double m_height;
 	double m_radius;
 	uint32_t m_sides;

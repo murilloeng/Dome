@@ -17,7 +17,7 @@ static double default_shape(double Hi, double Ht, double Rt)
 
 //constructor
 Dome::Dome(void) : 
-	m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, 
+	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, 
 	m_nodes{nullptr}, m_elements{nullptr}, m_twist{default_twist}, m_shape{default_shape}
 {
 	return;
@@ -110,14 +110,26 @@ void Dome::save(const char* path) const
 	const uint32_t ns = m_sides;
 	const uint32_t nl = m_layers;
 	const uint32_t nn = nl * ns + 1;
-	//save
+	const uint32_t ne = 2 * nl * ns;
+	//open
 	FILE* file = fopen(path, "w");
-	fprintf(file, "Nodes: %d\n", nn);
+	//nodes
+	fprintf(file, "%d\n", nn);
 	for(size_t i = 0; i < nn; i++)
 	{
 		for(uint32_t j = 0; j < 3; j++)
 		{
 			fprintf(file, "%+.6e ", m_nodes[i].position(j));
+		}
+		fprintf(file, "\n");
+	}
+	//elements
+	fprintf(file, "%d\n", ne);
+	for(size_t i = 0; i < ne; i++)
+	{
+		for(uint32_t j = 0; j < 2; j++)
+		{
+			fprintf(file, "%d ", m_elements[i].node(j));
 		}
 		fprintf(file, "\n");
 	}
@@ -162,6 +174,8 @@ void Dome::setup_nodes(void)
 	const uint32_t nl = m_layers;
 	const uint32_t nn = nl * ns + 1;
 	//setup
+	uint32_t du = 0;
+	uint32_t dk = 0;
 	delete[] m_nodes;
 	m_nodes = new Node[nn];
 	for(uint32_t i = 0; i < nl; i++)
@@ -171,16 +185,36 @@ void Dome::setup_nodes(void)
 		const double Ri = m_shape(Hi, Ht, Rt);
 		for(uint32_t j = 0; j < ns; j++)
 		{
-			m_nodes[i * ns + j].position(2, Hi);
-			m_nodes[i * ns + j].position(0, Ri * cos(2 * M_PI * j / ns + ti));
-			m_nodes[i * ns + j].position(1, Ri * sin(2 * M_PI * j / ns + ti));
+			m_nodes[i * ns + j].m_position[2] = Hi;
+			m_nodes[i * ns + j].m_position[0] = Ri * cos(2 * M_PI * j / ns + ti);
+			m_nodes[i * ns + j].m_position[1] = Ri * sin(2 * M_PI * j / ns + ti);
+			for(uint32_t k = 0; k < 3; k++) m_nodes[i * ns + j].m_dof[k] = i == 0 ? 3 * (nn - ns) + dk++ : du++;
 		}
 	}
-	m_nodes[nl * ns].position(0, 0);
-	m_nodes[nl * ns].position(1, 0);
-	m_nodes[nl * ns].position(2, Ht);
+	m_nodes[nl * ns].m_position[0] = 0;
+	m_nodes[nl * ns].m_position[1] = 0;
+	m_nodes[nl * ns].m_position[2] = Ht;
+	for(uint32_t k = 0; k < 3; k++) m_nodes[nl * ns].m_dof[k] = du++;
 }
 void Dome::setup_elements(void)
 {
-	return;
+	//data
+	const uint32_t ns = m_sides;
+	const uint32_t nl = m_layers;
+	const uint32_t ne = 2 * nl * ns;
+	//setup
+	delete[] m_elements;
+	m_elements = new Element[ne];
+	for(uint32_t i = 0; i < nl; i++)
+	{
+		for(uint32_t j = 0; j < ns; j++)
+		{
+			//horizontal
+			m_elements[2 * ns * i + j].m_nodes[0] = i * ns + (j + 0) % ns;
+			m_elements[2 * ns * i + j].m_nodes[1] = i * ns + (j + 1) % ns;
+			//vertical
+			m_elements[2 * ns * i + ns + j].m_nodes[0] = i * ns + j;
+			m_elements[2 * ns * i + ns + j].m_nodes[1] = i + 1 != nl ? (i + 1) * ns + j : nl * ns;
+		}
+	}
 }

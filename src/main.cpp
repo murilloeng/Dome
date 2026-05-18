@@ -8,6 +8,8 @@ int main(void)
 {
 	//data
 	Dome dome;
+	dome.sides(5);
+	dome.layers(3);
 	dome.setup();
 	dome.save("dome.txt");
 	//return

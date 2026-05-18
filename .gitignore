@@ -1,5 +1,6 @@
 *
 !*/
+!*.py
 !*.cpp
 !*.hpp
 !.gitignore

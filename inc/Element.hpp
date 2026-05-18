@@ -3,6 +3,8 @@
 //std
 #include <cstdint>
 
+class Dome;
+
 class Element
 {
 public:
@@ -24,4 +26,7 @@ public:
 private:
 	//data
 	uint32_t m_nodes[2];
+
+	//friends
+	friend class Dome;
 };
