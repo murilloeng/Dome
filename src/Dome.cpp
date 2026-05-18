@@ -1,9 +1,13 @@
 //std
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 
 //Dome
 #include "Dome/inc/Dome.hpp"
+
+//Math
+#include "Math/inc/solvers/newton_raphson.hpp"
 
 //static
 static double default_twist(double Hi, double Ht)
@@ -173,7 +177,33 @@ void Dome::solve_modal(void)
 }
 void Dome::solve_static(void)
 {
-	return;
+	//data
+	const uint32_t ne = elements();
+	const uint32_t nu = dof_unkown();
+	math::solvers::newton_raphson solver;
+	//solver
+	solver.m_size = nu;
+	solver.cleanup();
+	solver.allocate();
+	solver.m_p_new = 0;
+	solver.m_watch_dof = nu - 1;
+	memset(solver.m_fe, 0, nu * sizeof(double));
+	memset(solver.m_x_new, 0, nu * sizeof(double));
+	solver.m_system_1 = [this, ne, nu](double* f, double* K, const double* x)
+	{
+		//setup
+		memset(f, 0, nu * sizeof(double));
+		memset(K, 0, nu * nu * sizeof(double));
+		//assemble
+		for(uint32_t i = 0; i < ne; i++)
+		{
+			m_elements[i].apply(x);
+			m_elements[i].stiffness(K, x);
+			m_elements[i].internal_force(f, x);
+		}
+	};
+	//solve
+	solver.solve();
 }
 void Dome::solve_dynamic(void)
 {
