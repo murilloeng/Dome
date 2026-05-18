@@ -2,6 +2,7 @@
 
 //Dome
 #include "Dome/inc/Dome.hpp"
+#include "Dome/inc/What.hpp"
 
 //Canvas
 #include "Canvas/inc/Objects/Bases/BaseModel3D.hpp"
@@ -14,6 +15,9 @@ public:
 
 	//destructor
 	~Draw(void);
+
+	//data
+	What& what(void);
 
 private:
 	//draw
@@ -32,6 +36,7 @@ private:
 	void update_supports(void);
 
 	//data
+	What m_what;
 	Dome* m_dome;
 
 	uint32_t m_index_lines;

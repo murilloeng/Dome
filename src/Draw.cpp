@@ -17,6 +17,12 @@ Draw::~Draw(void)
 	return;
 }
 
+//data
+What& Draw::what(void)
+{
+	return m_what;
+}
+
 //draw
 void Draw::draw(void)
 {
@@ -38,9 +44,9 @@ void Draw::setup(void)
 	m_counter_vertices = 0;
 	m_counter_triangles = 0;
 	//setup
-	setup_nodes();
-	setup_elements();
-	setup_supports();
+	if(m_what.nodes()) setup_nodes();
+	if(m_what.elements()) setup_elements();
+	if(m_what.supports()) setup_supports();
 	//allocate
 	m_vbo.allocate(m_counter_vertices);
 	m_ibo.allocate(m_counter_points + m_counter_lines + m_counter_triangles);
@@ -53,9 +59,9 @@ void Draw::update(void)
 	m_index_vertices = 0;
 	m_index_triangles = 0;
 	//update
-	update_nodes();
-	update_elements();
-	update_supports();
+	if(m_what.nodes()) update_nodes();
+	if(m_what.elements()) update_elements();
+	if(m_what.supports()) update_supports();
 	//transfer
 	m_vbo.transfer();
 	m_ibo.transfer();

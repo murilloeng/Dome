@@ -40,7 +40,10 @@ private:
 	void setup_callbacks(void);
 
 	//update
+	static void update_nodes(GLFWwindow*);
 	static void update_playing(GLFWwindow*);
+	static void update_elements(GLFWwindow*);
+	static void update_supports(GLFWwindow*);
 	static void update_step(GLFWwindow*, bool);
 	static void update_framerate(GLFWwindow*, bool);
 

@@ -143,12 +143,42 @@ void Engine::setup_callbacks(void)
 }
 
 //step
+void Engine::update_nodes(GLFWwindow* window)
+{
+	//data
+	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
+	engine->m_draw->what().nodes(!engine->m_draw->what().nodes());
+	//update
+	engine->m_scene->setup();
+	engine->m_scene->update();
+	engine->m_scene->camera().bound();
+}
 void Engine::update_playing(GLFWwindow* window)
 {
 	//data
 	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
 	//playing
 	engine->m_playing = !engine->m_playing;
+}
+void Engine::update_elements(GLFWwindow* window)
+{
+	//data
+	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
+	engine->m_draw->what().elements(!engine->m_draw->what().elements());
+	//update
+	engine->m_scene->setup();
+	engine->m_scene->update();
+	engine->m_scene->camera().bound();
+}
+void Engine::update_supports(GLFWwindow* window)
+{
+	//data
+	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
+	engine->m_draw->what().supports(!engine->m_draw->what().supports());
+	//update
+	engine->m_scene->setup();
+	engine->m_scene->update();
+	engine->m_scene->camera().bound();
 }
 void Engine::update_step(GLFWwindow * window, bool increase)
 {
@@ -260,12 +290,16 @@ void Engine::callback_keyboard(GLFWwindow* window, int32_t key, int32_t scancode
 	Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
 	//play
 	if(shift && key == GLFW_KEY_P) update_playing(window);
+	//what
+	else if(shift && key == GLFW_KEY_N) update_nodes(window);
+	else if(shift && key == GLFW_KEY_E) update_elements(window);
+	else if(shift && key == GLFW_KEY_S) update_supports(window);
 	//step
 	else if(shift && key == GLFW_KEY_LEFT) update_step(window, false);
 	else if(shift && key == GLFW_KEY_RIGHT) update_step(window, true);
 	//framerate
-	else if(shift && key == GLFW_KEY_S) update_framerate(window, true);
-	else if(control && key == GLFW_KEY_S) update_framerate(window, false);
+	else if(shift && key == GLFW_KEY_F) update_framerate(window, true);
+	else if(control && key == GLFW_KEY_F) update_framerate(window, false);
 	//glfw
 	else if(key == GLFW_KEY_ESCAPE) glfwSetWindowShouldClose(window, true);
 	//camera
