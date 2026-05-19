@@ -11,6 +11,9 @@
 #include "Dome/inc/Section.hpp"
 #include "Dome/inc/Material.hpp"
 
+//Math
+#include "Math/inc/solvers/newton_raphson.hpp"
+
 class Dome
 {
 public:
@@ -35,6 +38,9 @@ public:
 
 	uint32_t dof_unkown(void) const;
 
+	Load& load(uint32_t);
+	const Load& load(uint32_t) const;
+
 	Node& node(uint32_t);
 	const Node& node(uint32_t) const;
 
@@ -47,11 +53,16 @@ public:
 	Element& element(uint32_t);
 	const Element& element(uint32_t) const;
 
+	std::vector<Load>& loads(void);
+	const std::vector<Load>& loads(void) const;
+
 	std::vector<Node>& nodes(void);
 	const std::vector<Node>& nodes(void) const;
 
 	std::vector<Element>& elements(void);
 	const std::vector<Element>& elements(void) const;
+
+	math::solvers::newton_raphson& solver_static(void);
 
 	//build
 	void build(void);
@@ -88,4 +99,6 @@ private:
 
 	double(*m_twist)(double, double);
 	double(*m_shape)(double, double, double);
+
+	math::solvers::newton_raphson m_solver_static;
 };

@@ -12,6 +12,11 @@ public:
 	//destructor
 	~MaterialPoint(void);
 
+	//analysis
+	void reset(void);
+	void update(void);
+	void restore(void);
+
 private:
 	//data
 	double m_strain;

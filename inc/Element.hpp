@@ -34,10 +34,12 @@ private:
 	double strain_gradient(double) const;
 
 	//data
+	static Dome* m_dome;
+
 	double m_f, m_K;
 	uint32_t m_nodes[2];
 	MaterialPoint m_material_point;
 
+	//friends
 	friend class Dome;
-	static Dome* m_dome;
 };

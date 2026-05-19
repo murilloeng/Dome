@@ -80,6 +80,15 @@ uint32_t Dome::dof_unkown(void) const
 	return 3 * (ns * (nl - 1) + 1);
 }
 
+Load& Dome::load(uint32_t index)
+{
+	return m_loads[index];
+}
+const Load& Dome::load(uint32_t index) const
+{
+	return m_loads[index];
+}
+
 Node& Dome::node(uint32_t index)
 {
 	return m_nodes[index];
@@ -116,6 +125,15 @@ const Element& Dome::element(uint32_t index) const
 	return m_elements[index];
 }
 
+std::vector<Load>& Dome::loads(void)
+{
+	return m_loads;
+}
+const std::vector<Load>& Dome::loads(void) const
+{
+	return m_loads;
+}
+
 std::vector<Node>& Dome::nodes(void)
 {
 	return m_nodes;
@@ -132,6 +150,11 @@ std::vector<Element>& Dome::elements(void)
 const std::vector<Element>& Dome::elements(void) const
 {
 	return m_elements;
+}
+
+math::solvers::newton_raphson& Dome::solver_static(void)
+{
+	return m_solver_static;
 }
 
 //save
@@ -177,21 +200,19 @@ void Dome::solve_static(void)
 {
 	//data
 	const uint32_t nu = dof_unkown();
-	math::solvers::newton_raphson solver;
+	const uint32_t ns = m_solver_static.m_step_max;
 	//setup
-	solver.cleanup();
-	solver.allocate(nu);
+	setup();
+	m_solver_static.cleanup();
+	m_solver_static.allocate(nu);
 	//solver
-	solver.m_p_new = 0;
-	solver.m_dp0 = 0.01;
-	solver.m_watch_dof = nu - 1;
-	solver.m_stop_criteria.m_x_min = -m_height;
-	memset(solver.m_fe, 0, nu * sizeof(double));
-	memset(solver.m_x_new, 0, nu * sizeof(double));
-	solver.m_continuation.m_type = math::solvers::continuation::type::control_state;
+	m_solver_static.m_p_new = 0;
+	memset(m_solver_static.m_fe, 0, nu * sizeof(double));
+	memset(m_solver_static.m_x_new, 0, nu * sizeof(double));
 	//system
-	for(const Load& load : m_loads) load.external_force(solver.m_fe);
-	solver.m_system_1 = [this, nu](double* f, double* K, const double* x)
+	for(Node& node : m_nodes) node.allocate(ns + 1, false);
+	for(const Load& load : m_loads) load.external_force(m_solver_static.m_fe);
+	m_solver_static.m_system_1 = [this, nu](double* f, double* K, const double* x)
 	{
 		//setup
 		memset(f, 0, nu * sizeof(double));
@@ -204,8 +225,17 @@ void Dome::solve_static(void)
 			element.internal_force(f, x);
 		}
 	};
+	m_solver_static.m_update = [this](void){
+		for(Element& element : m_elements) element.m_material_point.update();
+	};
+	m_solver_static.m_restore = [this](void){
+		for(Element& element : m_elements) element.m_material_point.restore();
+	};
+	m_solver_static.m_record = [this](void){
+		for(Node& node : m_nodes) node.record(m_solver_static.m_x_new, m_solver_static.m_step);
+	};
 	//solve
-	solver.solve();
+	m_solver_static.solve();
 }
 void Dome::solve_dynamic(void)
 {
@@ -255,21 +285,31 @@ void Dome::setup_nodes(void)
 void Dome::setup_elements(void)
 {
 	//data
+	uint32_t counter = -1;
 	const uint32_t ns = m_sides;
 	const uint32_t nl = m_layers;
-	const uint32_t ne = 2 * nl * ns;
+	const uint32_t ne = (3 * nl - 1) * ns;
 	//setup
 	m_elements.resize(ne);
 	for(uint32_t i = 0; i < nl; i++)
 	{
 		for(uint32_t j = 0; j < ns; j++)
 		{
-			//horizontal
-			m_elements[2 * ns * i + j].m_nodes[0] = i * ns + (j + 0) % ns;
-			m_elements[2 * ns * i + j].m_nodes[1] = i * ns + (j + 1) % ns;
+			//borttom
+			counter++;
+			m_elements[counter].m_nodes[0] = i * ns + j;
+			m_elements[counter].m_nodes[1] = i * ns + (j + 1) % ns;
 			//vertical
-			m_elements[2 * ns * i + ns + j].m_nodes[0] = i * ns + j;
-			m_elements[2 * ns * i + ns + j].m_nodes[1] = i + 1 != nl ? (i + 1) * ns + j : nl * ns;
+			counter++;
+			m_elements[counter].m_nodes[0] = i * ns + j;
+			m_elements[counter].m_nodes[1] = i + 1 != nl ? (i + 1) * ns + j : nl * ns;
+			//diagonal
+			if(i + 1 != nl)
+			{
+				counter++;
+				m_elements[counter].m_nodes[0] = i * ns + j;
+				m_elements[counter].m_nodes[1] = (i + 1) * ns + (j + 1) % ns;
+			}
 		}
 	}
 }

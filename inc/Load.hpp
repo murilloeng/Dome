@@ -10,7 +10,7 @@ class Load
 {
 public:
 	//constructor
-	Load(void);
+	Load(uint32_t, uint32_t, double, time_function = nullptr);
 
 	//destructor
 	~Load(void);
@@ -33,11 +33,13 @@ public:
 
 private:
 	//data
+	static Dome* m_dome;
+
 	double m_value;
 	uint32_t m_dof;
 	uint32_t m_node;
 	time_function m_function;
 
+	//friends
 	friend class Dome;
-	static Dome* m_dome;
 };

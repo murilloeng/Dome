@@ -23,14 +23,32 @@ public:
 
 	double position(uint32_t) const;
 	double position(uint32_t, double);
+
 	const double* position(void) const;
 	math::vec3 position(const double*) const;
 
+	const double* state(void) const;
+	double state(uint32_t, uint32_t) const;
+
+	const double* velocity(void) const;
+	double velocity(uint32_t, uint32_t) const;
+
+	const double* acceleration(void) const;
+	double acceleration(uint32_t, uint32_t) const;
+
+	//analysis
+	void allocate(uint32_t, bool);
+	void record(const double*, uint32_t);
+	void record(const double*, const double*, const double*, uint32_t);
+
 private:
 	//data
+	static Dome* m_dome;
+
 	uint32_t m_dof[3];
 	double m_position[3];
+	double *m_state, *m_velocity, *m_acceleration;
 
+	//friends
 	friend class Dome;
-	static Dome* m_dome;
 };

@@ -4,7 +4,7 @@
 #include "Dome/inc/Node.hpp"
 
 //constructor
-Load::Load(void) : m_value{0}, m_dof{0}, m_node{0}, m_function{nullptr}
+Load::Load(uint32_t node, uint32_t dof, double value, time_function function) : m_value{value}, m_dof{dof}, m_node{node}, m_function{function}
 {
 	return;
 }
