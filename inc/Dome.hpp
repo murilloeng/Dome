@@ -1,10 +1,12 @@
 #pragma once
 
 //std
+#include <vector>
 #include <cstdint>
 
 //Dome
 #include "Dome/inc/Node.hpp"
+#include "Dome/inc/Load.hpp"
 #include "Dome/inc/Element.hpp"
 #include "Dome/inc/Section.hpp"
 #include "Dome/inc/Material.hpp"
@@ -31,8 +33,6 @@ public:
 	uint32_t layers(uint32_t);
 	uint32_t layers(void) const;
 
-	uint32_t nodes(void) const;
-	uint32_t elements(void) const;
 	uint32_t dof_unkown(void) const;
 
 	Node& node(uint32_t);
@@ -46,6 +46,15 @@ public:
 
 	Element& element(uint32_t);
 	const Element& element(uint32_t) const;
+
+	std::vector<Node>& nodes(void);
+	const std::vector<Node>& nodes(void) const;
+
+	std::vector<Element>& elements(void);
+	const std::vector<Element>& elements(void) const;
+
+	//build
+	void build(void);
 
 	//save
 	void save(const char*) const;
@@ -71,10 +80,11 @@ private:
 	uint32_t m_sides;
 	uint32_t m_layers;
 
-	Node* m_nodes;
 	Section m_section;
-	Element* m_elements;
 	Material m_material;
+	std::vector<Load> m_loads;
+	std::vector<Node> m_nodes;
+	std::vector<Element> m_elements;
 
 	double(*m_twist)(double, double);
 	double(*m_shape)(double, double, double);

@@ -28,11 +28,9 @@ public:
 
 private:
 	//data
-	static Dome* m_dome;
-
 	uint32_t m_dof[3];
 	double m_position[3];
 
-	//friends
 	friend class Dome;
+	static Dome* m_dome;
 };

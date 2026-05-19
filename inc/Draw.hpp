@@ -11,13 +11,16 @@ class Draw : public canvas::objects::BaseModel3D
 {
 public:
 	//constructor
-	Draw(Dome*);
+	Draw(void);
 
 	//destructor
 	~Draw(void);
 
 	//data
 	What& what(void);
+
+	Dome* dome(void);
+	Dome* dome(Dome*);
 
 private:
 	//draw

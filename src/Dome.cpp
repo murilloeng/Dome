@@ -21,18 +21,17 @@ static double default_shape(double Hi, double Ht, double Rt)
 
 //constructor
 Dome::Dome(void) : 
-	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, 
-	m_nodes{nullptr}, m_elements{nullptr}, m_twist{default_twist}, m_shape{default_shape}
+	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{default_shape}
 {
 	Node::m_dome = this;
+	Load::m_dome = this;
 	Element::m_dome = this;
 }
 
 //destructor
 Dome::~Dome(void)
 {
-	delete[] m_nodes;
-	delete[] m_elements;
+	return;
 }
 
 //data
@@ -72,22 +71,6 @@ uint32_t Dome::layers(uint32_t layers)
 	return m_layers = layers;
 }
 
-uint32_t Dome::nodes(void) const
-{
-	//data
-	const uint32_t ns = m_sides;
-	const uint16_t nl = m_layers;
-	//return
-	return ns * nl + 1;
-}
-uint32_t Dome::elements(void) const
-{
-	//data
-	const uint32_t ns = m_sides;
-	const uint16_t nl = m_layers;
-	//return
-	return 2 * ns * nl;
-}
 uint32_t Dome::dof_unkown(void) const
 {
 	//data
@@ -133,31 +116,46 @@ const Element& Dome::element(uint32_t index) const
 	return m_elements[index];
 }
 
+std::vector<Node>& Dome::nodes(void)
+{
+	return m_nodes;
+}
+const std::vector<Node>& Dome::nodes(void) const
+{
+	return m_nodes;
+}
+
+std::vector<Element>& Dome::elements(void)
+{
+	return m_elements;
+}
+const std::vector<Element>& Dome::elements(void) const
+{
+	return m_elements;
+}
+
 //save
 void Dome::save(const char* path) const
 {
-	//data
-	const uint32_t nn = nodes();
-	const uint32_t ne = elements();
 	//open
 	FILE* file = fopen(path, "w");
 	//nodes
-	fprintf(file, "%d\n", nn);
-	for(size_t i = 0; i < nn; i++)
+	fprintf(file, "%zd\n", m_nodes.size());
+	for(const Node& node : m_nodes)
 	{
-		for(uint32_t j = 0; j < 3; j++)
+		for(uint32_t i = 0; i < 3; i++)
 		{
-			fprintf(file, "%+.6e ", m_nodes[i].position(j));
+			fprintf(file, "%+.6e ", node.position(i));
 		}
 		fprintf(file, "\n");
 	}
 	//elements
-	fprintf(file, "%d\n", ne);
-	for(size_t i = 0; i < ne; i++)
+	fprintf(file, "%zd\n", m_elements.size());
+	for(const Element& element : m_elements)
 	{
-		for(uint32_t j = 0; j < 2; j++)
+		for(uint32_t i = 0; i < 2; i++)
 		{
-			fprintf(file, "%d ", m_elements[i].node(j));
+			fprintf(file, "%d ", element.node(i));
 		}
 		fprintf(file, "\n");
 	}
@@ -178,7 +176,6 @@ void Dome::solve_modal(void)
 void Dome::solve_static(void)
 {
 	//data
-	const uint32_t ne = elements();
 	const uint32_t nu = dof_unkown();
 	math::solvers::newton_raphson solver;
 	//setup
@@ -193,17 +190,17 @@ void Dome::solve_static(void)
 	memset(solver.m_x_new, 0, nu * sizeof(double));
 	solver.m_continuation.m_type = math::solvers::continuation::type::control_state;
 	//system
-	solver.m_system_1 = [this, ne, nu](double* f, double* K, const double* x)
+	solver.m_system_1 = [this, nu](double* f, double* K, const double* x)
 	{
 		//setup
 		memset(f, 0, nu * sizeof(double));
 		memset(K, 0, nu * nu * sizeof(double));
 		//assemble
-		for(uint32_t i = 0; i < ne; i++)
+		for(Element& element : m_elements)
 		{
-			m_elements[i].apply(x);
-			m_elements[i].stiffness(K, x);
-			m_elements[i].internal_force(f, x);
+			element.apply(x);
+			element.stiffness(K, x);
+			element.internal_force(f, x);
 		}
 	};
 	//solve
@@ -235,8 +232,7 @@ void Dome::setup_nodes(void)
 	//setup
 	uint32_t du = 0;
 	uint32_t dk = 0;
-	delete[] m_nodes;
-	m_nodes = new Node[nn];
+	m_nodes.resize(nn);
 	for(uint32_t i = 0; i < nl; i++)
 	{
 		const double Hi = i * Ht / nl;
@@ -262,8 +258,7 @@ void Dome::setup_elements(void)
 	const uint32_t nl = m_layers;
 	const uint32_t ne = 2 * nl * ns;
 	//setup
-	delete[] m_elements;
-	m_elements = new Element[ne];
+	m_elements.resize(ne);
 	for(uint32_t i = 0; i < nl; i++)
 	{
 		for(uint32_t j = 0; j < ns; j++)

@@ -13,7 +13,6 @@
 Engine::Engine(void) : m_dome{nullptr}, m_draw{nullptr}, m_playing{false}, m_show_fps{true}, m_framerate{60}, m_scene{nullptr}
 {
 	setup_glfw();
-	setup_model();
 	setup_scene();
 	setup_callbacks();
 }
@@ -21,7 +20,6 @@ Engine::Engine(void) : m_dome{nullptr}, m_draw{nullptr}, m_playing{false}, m_sho
 //destructor
 Engine::~Engine(void)
 {
-	delete m_dome;
 	delete m_scene;
 	glfwTerminate();
 }
@@ -29,11 +27,11 @@ Engine::~Engine(void)
 //start
 void Engine::start(void)
 {
-	//time
+	//data
 	glfwSetTime(0);
 	float t1 = 0, t2;
+	m_draw->dome(m_dome);
 	//start
-	m_dome->setup();
 	m_scene->setup();
 	m_scene->update();
 	m_scene->camera().bound();
@@ -69,6 +67,10 @@ void Engine::start(void)
 Dome* Engine::dome(void)
 {
 	return m_dome;
+}
+Dome* Engine::dome(Dome* dome)
+{
+	return m_dome = dome;
 }
 
 bool Engine::show_fps(void) const
@@ -115,17 +117,13 @@ void Engine::setup_glfw(void)
 	//functions
 	canvas::load_functions();
 }
-void Engine::setup_model(void)
-{
-	m_dome = new Dome;
-}
 void Engine::setup_scene(void)
 {
 	//scene
 	m_scene = new canvas::Scene;
 	canvas::shaders::Shader::add_path("../Canvas/shd/");
 	//objects
-	m_draw = new Draw(m_dome);
+	m_draw = new Draw;
 	m_scene->add_object(m_draw);
 	//screen
 	int32_t width, height;

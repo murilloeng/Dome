@@ -25,6 +25,7 @@ public:
 
 	//data
 	Dome* dome(void);
+	Dome* dome(Dome*);
 
 	bool show_fps(bool);
 	bool show_fps(void) const;
@@ -36,7 +37,6 @@ private:
 	//setup
 	void setup_glfw(void);
 	void setup_scene(void);
-	void setup_model(void);
 	void setup_callbacks(void);
 
 	//update

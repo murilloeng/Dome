@@ -6,7 +6,7 @@
 #include "Canvas/inc/Vertices/Model3D.hpp"
 
 //constructor
-Draw::Draw(Dome* dome) : m_dome{dome}
+Draw::Draw(void)
 {
 	return;
 }
@@ -21,6 +21,15 @@ Draw::~Draw(void)
 What& Draw::what(void)
 {
 	return m_what;
+}
+
+Dome* Draw::dome(void)
+{
+	return m_dome;
+}
+Dome* Draw::dome(Dome* dome)
+{
+	return m_dome = dome;
 }
 
 //draw
@@ -71,7 +80,7 @@ void Draw::update(void)
 void Draw::setup_nodes(void)
 {
 	//data
-	const uint32_t nn = m_dome->nodes();
+	const uint64_t nn = m_dome->nodes().size();
 	//setup
 	m_counter_points += nn;
 	m_counter_vertices += nn;
@@ -79,8 +88,8 @@ void Draw::setup_nodes(void)
 void Draw::setup_elements(void)
 {
 	//data
-	const uint32_t nn = m_dome->nodes();
-	const uint32_t ne = m_dome->elements();
+	const uint64_t nn = m_dome->nodes().size();
+	const uint64_t ne = m_dome->elements().size();
 	//setup
 	m_counter_vertices += nn;
 	m_counter_lines += 2 * ne;
@@ -99,7 +108,7 @@ void Draw::setup_supports(void)
 void Draw::update_nodes(void)
 {
 	//data
-	const uint32_t nn = m_dome->nodes();
+	const uint64_t nn = m_dome->nodes().size();
 	uint32_t* ibo_ptr = m_ibo.data() + m_index_points;
 	canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
 	//buffers data
@@ -116,8 +125,8 @@ void Draw::update_nodes(void)
 void Draw::update_elements(void)
 {
 	//data
-	const uint32_t nn = m_dome->nodes();
-	const uint32_t ne = m_dome->elements();
+	const uint64_t nn = m_dome->nodes().size();
+	const uint64_t ne = m_dome->elements().size();
 	uint32_t* ibo_ptr = m_ibo.data() + m_counter_points + m_index_lines;
 	canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
 	//vbo data
