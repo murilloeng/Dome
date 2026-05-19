@@ -4,6 +4,10 @@
 //Dome
 #include "Dome/inc/Engine.hpp"
 
+//data
+const double Fr = 1.00e+08;
+
+//draw
 void draw(Dome& dome)
 {
 	//data
@@ -13,6 +17,27 @@ void draw(Dome& dome)
 	//start
 	engine.start();
 }
+
+//plot
+void plot_static(Dome& dome)
+{
+	//data
+	const uint32_t ns = dome.sides();
+	const uint32_t nl = dome.layers();
+	FILE* file = fopen("data.txt", "w");
+	const uint32_t steps = dome.solver_static().m_step;
+	//save
+	for(uint32_t i = 0; i < steps; i++)
+	{
+		const double u = dome.node(ns * nl).state(i, 2);
+		const double p = dome.solver_static().m_p_data[i];
+		fprintf(file, "%+.6e %+.6e\n", u, Fr * p);
+	}
+	//close
+	fclose(file);
+}
+
+//solve
 void solve_static(Dome& dome)
 {
 	//data
@@ -20,10 +45,10 @@ void solve_static(Dome& dome)
 	math::solvers::newton_raphson& solver = dome.solver_static();
 	//setup
 	solver.m_dp0 = 1.00e-04;
-	solver.m_step_max = 1000;
+	solver.m_step_max = 2000;
 	solver.m_watch_dof = nu - 1;
 	solver.m_continuation.m_type = math::solvers::continuation::type::control_state;
-	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::stop_criteria::type::load_local_maximum);
+	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::stop_criteria::type::load_value_negative);
 	//solve
 	dome.solve_static();
 }
@@ -32,14 +57,16 @@ int main(void)
 {
 	//data
 	Dome dome;
-	const uint32_t ns = 20;
-	const uint32_t nl = 20;
+	const uint32_t ns = 10;
+	const uint32_t nl = 10;
 	//setup
 	dome.sides(ns);
 	dome.layers(nl);
-	dome.loads().push_back(Load(ns * nl, 2, -1e8));
+	dome.loads().push_back(Load(ns * nl, 2, -Fr));
 	//solve
 	solve_static(dome);
+	//plot
+	plot_static(dome);
 	//draw
 	draw(dome);
 	//return

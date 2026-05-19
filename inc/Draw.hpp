@@ -21,6 +21,12 @@ public:
 
 	Dome* dome(void);
 	Dome* dome(Dome*);
+	
+	bool deformed(bool);
+	bool deformed(void) const;
+
+	uint32_t step(uint32_t);
+	uint32_t step(void) const;
 
 private:
 	//draw
@@ -41,6 +47,8 @@ private:
 	//data
 	What m_what;
 	Dome* m_dome;
+	bool m_deformed;
+	uint32_t m_step;
 
 	uint32_t m_index_lines;
 	uint32_t m_index_points;

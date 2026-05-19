@@ -80,7 +80,6 @@ public:
 
 private:
 	//analysis
-	void setup_data(void);
 	void setup_nodes(void);
 	void setup_elements(void);
 

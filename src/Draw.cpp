@@ -6,7 +6,7 @@
 #include "Canvas/inc/Vertices/Model3D.hpp"
 
 //constructor
-Draw::Draw(void)
+Draw::Draw(void) : m_deformed{false}, m_step{0}
 {
 	return;
 }
@@ -30,6 +30,24 @@ Dome* Draw::dome(void)
 Dome* Draw::dome(Dome* dome)
 {
 	return m_dome = dome;
+}
+
+bool Draw::deformed(void) const
+{
+	return m_deformed;
+}
+bool Draw::deformed(bool deformed)
+{
+	return m_deformed = deformed;
+}
+
+uint32_t Draw::step(void) const
+{
+	return m_step;
+}
+uint32_t Draw::step(uint32_t step)
+{
+	return m_step = step;
 }
 
 //draw
@@ -117,6 +135,7 @@ void Draw::update_nodes(void)
 		ibo_ptr[i] = i;
 		vbo_ptr[i].m_color = "red";
 		vbo_ptr[i].m_position = m_dome->node(i).position();
+		if(m_deformed) vbo_ptr[i].m_position += m_dome->node(i).state() + 3 * m_step;
 	}
 	//update
 	m_index_points += nn;
@@ -134,6 +153,7 @@ void Draw::update_elements(void)
 	{
 		vbo_ptr[i].m_color = "blue";
 		vbo_ptr[i].m_position = m_dome->node(i).position();
+		if(m_deformed) vbo_ptr[i].m_position += m_dome->node(i).state() + 3 * m_step;
 	}
 	//ibo data
 	for(uint32_t i = 0; i < ne; i++)

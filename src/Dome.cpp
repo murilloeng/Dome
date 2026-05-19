@@ -9,19 +9,33 @@
 //Math
 #include "Math/inc/solvers/newton_raphson.hpp"
 
-//static
+//shapes
+[[maybe_unused]] static double shape_cone(double Hi, double Ht, double Rt)
+{
+	return Rt * (1 - Hi / Ht);
+}
+[[maybe_unused]] static double shape_ellipsoid(double Hi, double Ht, double Rt)
+{
+	return Rt * sqrt(1 - pow(Hi / Ht, 2));
+}
+[[maybe_unused]] static double shape_paraboloid(double Hi, double Ht, double Rt)
+{
+	return Rt * sqrt(1 - Hi / Ht);
+}
+[[maybe_unused]] static double shape_paraboloid_inversed(double Hi, double Ht, double Rt)
+{
+	return Rt * (1 - sqrt(Hi / Ht));
+}
+
+//twist
 static double default_twist(double Hi, double Ht)
 {
 	return 0;
 }
-static double default_shape(double Hi, double Ht, double Rt)
-{
-	return Rt * sqrt(1 - pow(Hi / Ht, 2));
-}
 
 //constructor
 Dome::Dome(void) : 
-	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{default_shape}
+	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{shape_paraboloid}
 {
 	Node::m_dome = this;
 	Load::m_dome = this;
