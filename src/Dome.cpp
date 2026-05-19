@@ -190,6 +190,7 @@ void Dome::solve_static(void)
 	memset(solver.m_x_new, 0, nu * sizeof(double));
 	solver.m_continuation.m_type = math::solvers::continuation::type::control_state;
 	//system
+	for(const Load& load : m_loads) load.external_force(solver.m_fe);
 	solver.m_system_1 = [this, nu](double* f, double* K, const double* x)
 	{
 		//setup

@@ -3,6 +3,9 @@
 //std
 #include <cstdint>
 
+//Dome
+#include "Dome/inc/MaterialPoint.hpp"
+
 class Dome;
 
 class Element
@@ -25,9 +28,15 @@ public:
 	void internal_force(double*, const double*) const;
 
 private:
+	//strains
+	double strain_hessian(double) const;
+	double strain_measure(double) const;
+	double strain_gradient(double) const;
+
 	//data
+	double m_f, m_K;
 	uint32_t m_nodes[2];
-	double m_C, m_U, m_f, m_K;
+	MaterialPoint m_material_point;
 
 	friend class Dome;
 	static Dome* m_dome;

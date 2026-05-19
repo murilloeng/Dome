@@ -1,6 +1,10 @@
+//std
+#include <cmath>
+
 //Dome
 #include "Dome/inc/Dome.hpp"
 #include "Dome/inc/Element.hpp"
+#include "Dome/inc/Section.hpp"
 
 //Math
 #include "Math/inc/linear/vec3.hpp"
@@ -30,7 +34,27 @@ uint32_t Element::node(uint32_t index, uint32_t node)
 //formulation
 void Element::apply(const double* x)
 {
-	return;
+	//data
+	const double A = m_dome->section().area();
+	const double& s = m_material_point.m_stress;
+	const double& K = m_material_point.m_stiffness;
+	const math::vec3 z1 = m_dome->node(m_nodes[0]).position();
+	const math::vec3 z2 = m_dome->node(m_nodes[1]).position();
+	const math::vec3 x1 = m_dome->node(m_nodes[0]).position(x);
+	const math::vec3 x2 = m_dome->node(m_nodes[1]).position(x);
+	//length
+	const double l0 = (z2 - z1).norm();
+	const double ln = (x2 - x1).norm();
+	//strain
+	const double e = strain_measure(ln / l0);
+	const double h = strain_hessian(ln / l0);
+	const double g = strain_gradient(ln / l0);
+	//material
+	m_material_point.m_strain = e;
+	m_dome->material().return_mapping(m_material_point);
+	//apply
+	m_f = s * g * A;
+	m_K = s * h * A / l0 + K * g * g * A / l0;
 }
 void Element::inertia(double* M, const double* x) const
 {
@@ -91,6 +115,20 @@ void Element::internal_force(double* f, const double* x) const
 		if(d1[j] < nu) f[d1[j]] -= m_f * (x2[j] - x1[j]) / ln;
 		if(d2[j] < nu) f[d2[j]] += m_f * (x2[j] - x1[j]) / ln;
 	}
+}
+
+//strains
+double Element::strain_hessian(double s) const
+{
+	return -1 / s / s;
+}
+double Element::strain_measure(double s) const
+{
+	return log(s);
+}
+double Element::strain_gradient(double s) const
+{
+	return 1 / s;
 }
 
 //static data

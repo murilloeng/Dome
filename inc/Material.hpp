@@ -1,5 +1,7 @@
 #pragma once
 
+class MaterialPoint;
+
 class Material
 {
 public:
@@ -10,6 +12,9 @@ public:
 	~Material(void);
 
 	//data
+	bool inelastic(bool);
+	bool inelastic(void) const;
+
 	double density(double);
 	double density(void) const;
 
@@ -22,8 +27,12 @@ public:
 	double plastic_modulus(double);
 	double plastic_modulus(void) const;
 
+	//return mapping
+	void return_mapping(MaterialPoint&) const;
+
 private:
 	//data
+	bool m_inelastic;
 	double m_density;
 	double m_yield_stress;
 	double m_elastic_modulus;
