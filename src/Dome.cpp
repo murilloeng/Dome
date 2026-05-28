@@ -7,7 +7,7 @@
 #include "Dome/inc/Dome.hpp"
 
 //Math
-#include "Math/inc/solvers/newton_raphson.hpp"
+#include "Math/inc/solvers/NewtonRaphson.hpp"
 
 //shapes
 [[maybe_unused]] static double shape_cone(double Hi, double Ht, double Rt)
@@ -166,7 +166,7 @@ const std::vector<Element>& Dome::elements(void) const
 	return m_elements;
 }
 
-math::solvers::newton_raphson& Dome::solver_static(void)
+math::solvers::NewtonRaphson& Dome::solver_static(void)
 {
 	return m_solver_static;
 }

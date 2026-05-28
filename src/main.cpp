@@ -42,13 +42,13 @@ void solve_static(Dome& dome)
 {
 	//data
 	const uint32_t nu = dome.dof_unkown();
-	math::solvers::newton_raphson& solver = dome.solver_static();
+	math::solvers::NewtonRaphson& solver = dome.solver_static();
 	//setup
 	solver.m_dp0 = 1.00e-04;
 	solver.m_step_max = 2000;
 	solver.m_watch_dof = nu - 1;
-	solver.m_continuation.m_type = math::solvers::continuation::type::control_state;
-	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::stop_criteria::type::load_value_negative);
+	solver.m_continuation.m_type = math::solvers::Continuation::type::control_state;
+	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::type::load_value_negative);
 	//solve
 	dome.solve_static();
 }
@@ -58,7 +58,7 @@ int main(void)
 	//data
 	Dome dome;
 	const uint32_t ns = 10;
-	const uint32_t nl = 10;
+	const uint32_t nl = 20;
 	//setup
 	dome.sides(ns);
 	dome.layers(nl);

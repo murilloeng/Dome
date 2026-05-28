@@ -12,7 +12,7 @@
 #include "Dome/inc/Material.hpp"
 
 //Math
-#include "Math/inc/solvers/newton_raphson.hpp"
+#include "Math/inc/solvers/NewtonRaphson.hpp"
 
 class Dome
 {
@@ -62,7 +62,7 @@ public:
 	std::vector<Element>& elements(void);
 	const std::vector<Element>& elements(void) const;
 
-	math::solvers::newton_raphson& solver_static(void);
+	math::solvers::NewtonRaphson& solver_static(void);
 
 	//build
 	void build(void);
@@ -99,5 +99,5 @@ private:
 	double(*m_twist)(double, double);
 	double(*m_shape)(double, double, double);
 
-	math::solvers::newton_raphson m_solver_static;
+	math::solvers::NewtonRaphson m_solver_static;
 };
