@@ -3,8 +3,7 @@
 //std
 #include <cstdint>
 
-//Math
-#include "Math/inc/linear/vec3.hpp"
+#include "Math/inc/Linear/Vec3.hpp"
 
 class Dome;
 
@@ -25,7 +24,7 @@ public:
 	double position(uint32_t, double);
 
 	const double* position(void) const;
-	math::vec3 position(const double*) const;
+	math::Vec3 position(const double*) const;
 
 	const double* state(void) const;
 	double state(uint32_t, uint32_t) const;

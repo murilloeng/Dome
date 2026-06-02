@@ -12,7 +12,7 @@
 #include "Dome/inc/Material.hpp"
 
 //Math
-#include "Math/inc/solvers/NewtonRaphson.hpp"
+#include "Math/inc/Solvers/NewtonRaphson.hpp"
 
 class Dome
 {

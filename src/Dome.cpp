@@ -7,7 +7,7 @@
 #include "Dome/inc/Dome.hpp"
 
 //Math
-#include "Math/inc/solvers/NewtonRaphson.hpp"
+#include "Math/inc/Solvers/NewtonRaphson.hpp"
 
 //shapes
 [[maybe_unused]] static double shape_cone(double Hi, double Ht, double Rt)

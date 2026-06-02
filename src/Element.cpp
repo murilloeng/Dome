@@ -7,7 +7,7 @@
 #include "Dome/inc/Section.hpp"
 
 //Math
-#include "Math/inc/linear/vec3.hpp"
+#include "Math/inc/Linear/Vec3.hpp"
 
 //constructor
 Element::Element(void) : m_nodes{0, 0}
@@ -38,10 +38,10 @@ void Element::apply(const double* x)
 	const double A = m_dome->section().area();
 	const double& s = m_material_point.m_stress;
 	const double& K = m_material_point.m_stiffness;
-	const math::vec3 z1 = m_dome->node(m_nodes[0]).position();
-	const math::vec3 z2 = m_dome->node(m_nodes[1]).position();
-	const math::vec3 x1 = m_dome->node(m_nodes[0]).position(x);
-	const math::vec3 x2 = m_dome->node(m_nodes[1]).position(x);
+	const math::Vec3 z1 = m_dome->node(m_nodes[0]).position();
+	const math::Vec3 z2 = m_dome->node(m_nodes[1]).position();
+	const math::Vec3 x1 = m_dome->node(m_nodes[0]).position(x);
+	const math::Vec3 x2 = m_dome->node(m_nodes[1]).position(x);
 	//length
 	const double l0 = (z2 - z1).norm();
 	const double ln = (x2 - x1).norm();
@@ -66,11 +66,11 @@ void Element::stiffness(double* K, const double* x) const
 	const uint32_t nu = m_dome->dof_unkown();
 	const uint32_t* d1 = m_dome->node(m_nodes[0]).dof();
 	const uint32_t* d2 = m_dome->node(m_nodes[1]).dof();
-	const math::vec3 x1 = m_dome->node(m_nodes[0]).position(x);
-	const math::vec3 x2 = m_dome->node(m_nodes[1]).position(x);
+	const math::Vec3 x1 = m_dome->node(m_nodes[0]).position(x);
+	const math::Vec3 x2 = m_dome->node(m_nodes[1]).position(x);
 	//data
 	const double ln = (x2 - x1).norm();
-	const math::vec3 tn = (x2 - x1) / ln;
+	const math::Vec3 tn = (x2 - x1) / ln;
 	//force
 	for(uint32_t j = 0; j < 3; j++)
 	{
@@ -105,8 +105,8 @@ void Element::internal_force(double* f, const double* x) const
 	const uint32_t nu = m_dome->dof_unkown();
 	const uint32_t* d1 = m_dome->node(m_nodes[0]).dof();
 	const uint32_t* d2 = m_dome->node(m_nodes[1]).dof();
-	const math::vec3 x1 = m_dome->node(m_nodes[0]).position(x);
-	const math::vec3 x2 = m_dome->node(m_nodes[1]).position(x);
+	const math::Vec3 x1 = m_dome->node(m_nodes[0]).position(x);
+	const math::Vec3 x2 = m_dome->node(m_nodes[1]).position(x);
 	//data
 	const double ln = (x2 - x1).norm();
 	//internal force

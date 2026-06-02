@@ -39,7 +39,7 @@ const double* Node::position(void) const
 {
 	return m_position;
 }
-math::vec3 Node::position(const double* x) const
+math::Vec3 Node::position(const double* x) const
 {
 	//data
 	const uint32_t nu = m_dome->dof_unkown();

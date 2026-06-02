@@ -2,7 +2,7 @@
 #include <cmath>
 
 //Math
-#include "Math/inc/misc/util.hpp"
+#include "Math/inc/Miscellaneous/util.hpp"
 
 //Dome
 #include "Dome/inc/Material.hpp"

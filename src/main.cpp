@@ -47,8 +47,8 @@ void solve_static(Dome& dome)
 	solver.m_dp0 = 1.00e-04;
 	solver.m_step_max = 2000;
 	solver.m_watch_dof = nu - 1;
-	solver.m_continuation.m_type = math::solvers::Continuation::type::control_state;
-	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::type::load_value_negative);
+	solver.m_continuation.m_type = math::solvers::Continuation::Type::StateControl;
+	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::Type::LoadValueNegative);
 	//solve
 	dome.solve_static();
 }
