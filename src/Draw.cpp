@@ -74,6 +74,7 @@ void Draw::setup(void)
 	if(m_what.nodes()) setup_nodes();
 	if(m_what.elements()) setup_elements();
 	if(m_what.supports()) setup_supports();
+	if(m_what.surfaces()) setup_surfaces();
 	//allocate
 	m_vbo.allocate(m_counter_vertices);
 	m_ibo.allocate(m_counter_points + m_counter_lines + m_counter_triangles);
@@ -89,6 +90,7 @@ void Draw::update(void)
 	if(m_what.nodes()) update_nodes();
 	if(m_what.elements()) update_elements();
 	if(m_what.supports()) update_supports();
+	if(m_what.surfaces()) update_surfaces();
 	//transfer
 	m_vbo.transfer();
 	m_ibo.transfer();
@@ -120,6 +122,15 @@ void Draw::setup_supports(void)
 	m_counter_lines += 40 * ns;
 	m_counter_vertices += 26 * ns;
 	m_counter_triangles += 48 * ns;
+}
+void Draw::setup_surfaces(void)
+{
+	//data
+	const uint32_t ns = m_dome->sides();
+	const uint32_t nl = m_dome->layers();
+	//setup
+	m_counter_vertices += nl * ns + 1;
+	m_counter_triangles += 3 * ns * (2 * nl - 1);
 }
 
 //update
@@ -224,4 +235,43 @@ void Draw::update_supports(void)
 	m_index_lines += 40 * ns;
 	m_index_vertices += 26 * ns;
 	m_index_triangles += 48 * ns;
+}
+void Draw::update_surfaces(void)
+{
+	//data
+	const uint32_t ns = m_dome->sides();
+	const uint32_t nl = m_dome->layers();
+	uint32_t* ibo_ptr = m_ibo.data() + m_counter_points + m_counter_lines + m_index_triangles;
+	canvas::vertices::Model3D* vbo_ptr = (canvas::vertices::Model3D*) m_vbo.data() + m_index_vertices;
+	//vbo data
+	for(uint32_t i = 0; i < ns * nl + 1; i++)
+	{
+		vbo_ptr[i].m_color = "pink";
+		vbo_ptr[i].m_position = m_dome->node(i).position();
+	}
+	//ibo data
+	for(uint32_t i = 0; i < nl; i++)
+	{
+		for(uint32_t j = 0; j < ns; j++)
+		{
+			if(i + 1 != nl)
+			{
+				ibo_ptr[6 * (i * ns + j) + 0] = m_index_vertices + (i + 0) * ns + (j + 0) % ns;
+				ibo_ptr[6 * (i * ns + j) + 1] = m_index_vertices + (i + 0) * ns + (j + 1) % ns;
+				ibo_ptr[6 * (i * ns + j) + 2] = m_index_vertices + (i + 1) * ns + (j + 1) % ns;
+				ibo_ptr[6 * (i * ns + j) + 3] = m_index_vertices + (i + 0) * ns + (j + 0) % ns;
+				ibo_ptr[6 * (i * ns + j) + 4] = m_index_vertices + (i + 1) * ns + (j + 1) % ns;
+				ibo_ptr[6 * (i * ns + j) + 5] = m_index_vertices + (i + 1) * ns + (j + 0) % ns;
+			}
+			else
+			{
+				ibo_ptr[6 * (nl - 1) * ns + 3 * j + 2] = m_index_vertices + nl * ns;
+				ibo_ptr[6 * (nl - 1) * ns + 3 * j + 0] = m_index_vertices + (nl - 1) * ns + (j + 0) % ns;
+				ibo_ptr[6 * (nl - 1) * ns + 3 * j + 1] = m_index_vertices + (nl - 1) * ns + (j + 1) % ns;
+			}
+		}
+	}
+	//update
+	m_index_vertices += ns * nl + 1;
+	m_index_triangles += 3 * ns * (2 * nl - 1);
 }

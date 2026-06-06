@@ -38,11 +38,13 @@ private:
 	void setup_nodes(void);
 	void setup_elements(void);
 	void setup_supports(void);
+	void setup_surfaces(void);
 
 	//update
 	void update_nodes(void);
 	void update_elements(void);
 	void update_supports(void);
+	void update_surfaces(void);
 
 	//data
 	What m_what;

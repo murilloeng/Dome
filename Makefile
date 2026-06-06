@@ -53,7 +53,7 @@ math :
 	+@cd ../Math && $(MAKE) -f Makefile m=$m
 
 canvas : 
-	+@cd ../Math && $(MAKE) -f Makefile m=$m
+	+@cd ../Canvas && $(MAKE) -f Makefile m=$m
 
 $(out) : $(obj)
 	@mkdir -p $(dir $@)

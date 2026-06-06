@@ -57,8 +57,8 @@ int main(void)
 {
 	//data
 	Dome dome;
-	const uint32_t ns = 10;
-	const uint32_t nl = 20;
+	const uint32_t ns = 6;
+	const uint32_t nl = 3;
 	//setup
 	dome.sides(ns);
 	dome.layers(nl);

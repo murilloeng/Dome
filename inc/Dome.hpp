@@ -12,6 +12,7 @@
 #include "Dome/inc/Material.hpp"
 
 //Math
+#include "Math/inc/Solvers/Newmark.hpp"
 #include "Math/inc/Solvers/NewtonRaphson.hpp"
 
 class Dome
@@ -64,11 +65,11 @@ public:
 
 	math::solvers::NewtonRaphson& solver_static(void);
 
-	//build
-	void build(void);
-
 	//save
 	void save(const char*) const;
+
+	//loads
+	void apply_loads_vertical(void);
 
 	//analysis
 	void setup(void);
@@ -99,5 +100,6 @@ private:
 	double(*m_twist)(double, double);
 	double(*m_shape)(double, double, double);
 
+	math::solvers::Newmark m_solver_dynamic;
 	math::solvers::NewtonRaphson m_solver_static;
 };

@@ -200,6 +200,12 @@ void Dome::save(const char* path) const
 	fclose(file);
 }
 
+//loads
+void Dome::apply_loads_vertical(void)
+{
+	
+}
+
 //analysis
 void Dome::setup(void)
 {

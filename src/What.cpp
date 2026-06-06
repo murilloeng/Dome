@@ -2,7 +2,7 @@
 #include "Dome/inc/What.hpp"
 
 //constructor
-What::What(void) : m_nodes{true}, m_loads{true}, m_elements{true}, m_supports{true}
+What::What(void) : m_nodes{true}, m_loads{true}, m_elements{true}, m_supports{true}, m_surfaces{true}
 {
 	return;
 }
@@ -48,4 +48,13 @@ bool What::supports(void) const
 bool What::supports(bool supports)
 {
 	return m_supports = supports;
+}
+
+bool What::surfaces(void) const
+{
+	return m_surfaces;
+}
+bool What::surfaces(bool surfaces)
+{
+	return m_surfaces = surfaces;
 }
