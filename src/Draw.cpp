@@ -246,7 +246,7 @@ void Draw::update_surfaces(void)
 	//vbo data
 	for(uint32_t i = 0; i < ns * nl + 1; i++)
 	{
-		vbo_ptr[i].m_color = "pink";
+		vbo_ptr[i].m_color = "#87CEFA";
 		vbo_ptr[i].m_position = m_dome->node(i).position();
 	}
 	//ibo data
