@@ -6,7 +6,7 @@
 
 //Dome
 #include "Dome/inc/Node.hpp"
-#include "Dome/inc/Load.hpp"
+#include "Dome/inc/Loads.hpp"
 #include "Dome/inc/Element.hpp"
 #include "Dome/inc/Section.hpp"
 #include "Dome/inc/Material.hpp"
@@ -39,8 +39,8 @@ public:
 
 	uint32_t dof_unkown(void) const;
 
-	Load& load(uint32_t);
-	const Load& load(uint32_t) const;
+	Loads& loads(void);
+	const Loads& loads(void) const;
 
 	Node& node(uint32_t);
 	const Node& node(uint32_t) const;
@@ -53,9 +53,6 @@ public:
 
 	Element& element(uint32_t);
 	const Element& element(uint32_t) const;
-
-	std::vector<Load>& loads(void);
-	const std::vector<Load>& loads(void) const;
 
 	std::vector<Node>& nodes(void);
 	const std::vector<Node>& nodes(void) const;
@@ -91,9 +88,9 @@ private:
 	uint32_t m_sides;
 	uint32_t m_layers;
 
+	Loads m_loads;
 	Section m_section;
 	Material m_material;
-	std::vector<Load> m_loads;
 	std::vector<Node> m_nodes;
 	std::vector<Element> m_elements;
 

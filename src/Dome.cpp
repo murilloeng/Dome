@@ -38,7 +38,7 @@ Dome::Dome(void) :
 	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{shape_paraboloid}
 {
 	Node::m_dome = this;
-	Load::m_dome = this;
+	Loads::m_dome = this;
 	Element::m_dome = this;
 }
 
@@ -94,13 +94,13 @@ uint32_t Dome::dof_unkown(void) const
 	return 3 * (ns * (nl - 1) + 1);
 }
 
-Load& Dome::load(uint32_t index)
+Loads& Dome::loads(void)
 {
-	return m_loads[index];
+	return m_loads;
 }
-const Load& Dome::load(uint32_t index) const
+const Loads& Dome::loads(void) const
 {
-	return m_loads[index];
+	return m_loads;
 }
 
 Node& Dome::node(uint32_t index)
@@ -137,15 +137,6 @@ Element& Dome::element(uint32_t index)
 const Element& Dome::element(uint32_t index) const
 {
 	return m_elements[index];
-}
-
-std::vector<Load>& Dome::loads(void)
-{
-	return m_loads;
-}
-const std::vector<Load>& Dome::loads(void) const
-{
-	return m_loads;
 }
 
 std::vector<Node>& Dome::nodes(void)
@@ -227,11 +218,10 @@ void Dome::solve_static(void)
 	m_solver_static.allocate(nu);
 	//solver
 	m_solver_static.m_p_new = 0;
-	memset(m_solver_static.m_fe, 0, nu * sizeof(double));
+	m_loads.apply(m_solver_static.m_fe);
 	memset(m_solver_static.m_x_new, 0, nu * sizeof(double));
 	//system
 	for(Node& node : m_nodes) node.allocate(ns + 1, false);
-	for(const Load& load : m_loads) load.external_force(m_solver_static.m_fe);
 	m_solver_static.m_system_1 = [this, nu](double* f, double* K, const double* x)
 	{
 		//setup

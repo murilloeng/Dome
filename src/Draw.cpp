@@ -248,6 +248,7 @@ void Draw::update_surfaces(void)
 	{
 		vbo_ptr[i].m_color = "#87CEFA";
 		vbo_ptr[i].m_position = m_dome->node(i).position();
+		vbo_ptr[i].m_position += m_dome->node(i).state() + 3 * m_step;
 	}
 	//ibo data
 	for(uint32_t i = 0; i < nl; i++)

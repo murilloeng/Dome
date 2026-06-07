@@ -4,9 +4,6 @@
 //Dome
 #include "Dome/inc/Engine.hpp"
 
-//data
-const double Fr = 1.00e+08;
-
 //draw
 void draw(Dome& dome)
 {
@@ -31,7 +28,7 @@ void plot_static(Dome& dome)
 	{
 		const double u = dome.node(ns * nl).state(i, 2);
 		const double p = dome.solver_static().m_p_data[i];
-		fprintf(file, "%+.6e %+.6e\n", u, Fr * p);
+		fprintf(file, "%+.6e %+.6e\n", u, p * dome.loads().vertical_load());
 	}
 	//close
 	fclose(file);
@@ -44,7 +41,7 @@ void solve_static(Dome& dome)
 	const uint32_t nu = dome.dof_unkown();
 	math::solvers::NewtonRaphson& solver = dome.solver_static();
 	//setup
-	solver.m_dp0 = 1.00e-04;
+	solver.m_dp0 = 1.00e-00;
 	solver.m_step_max = 2000;
 	solver.m_watch_dof = nu - 1;
 	solver.m_continuation.m_type = math::solvers::Continuation::Type::StateControl;
@@ -57,12 +54,11 @@ int main(void)
 {
 	//data
 	Dome dome;
-	const uint32_t ns = 6;
-	const uint32_t nl = 3;
+	const uint32_t ns = 3;
+	const uint32_t nl = 10;
 	//setup
 	dome.sides(ns);
 	dome.layers(nl);
-	dome.loads().push_back(Load(ns * nl, 2, -Fr));
 	//solve
 	solve_static(dome);
 	//plot
