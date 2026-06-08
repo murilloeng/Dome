@@ -28,7 +28,7 @@ void plot_static(Dome& dome)
 	{
 		const double u = dome.node(ns * nl).state(i, 2);
 		const double p = dome.solver_static().m_p_data[i];
-		fprintf(file, "%+.6e %+.6e\n", u, p * dome.loads().vertical_load());
+		fprintf(file, "%+.6e %+.6e\n", u, -p * dome.loads().distributed_load(2));
 	}
 	//close
 	fclose(file);
@@ -54,9 +54,10 @@ int main(void)
 {
 	//data
 	Dome dome;
-	const uint32_t ns = 3;
-	const uint32_t nl = 10;
+	const uint32_t ns = 10;
+	const uint32_t nl = 2;
 	//setup
+	dome.flip(true);
 	dome.sides(ns);
 	dome.layers(nl);
 	//solve

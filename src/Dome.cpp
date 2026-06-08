@@ -35,7 +35,7 @@ static double default_twist(double Hi, double Ht)
 
 //constructor
 Dome::Dome(void) : 
-	m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{shape_paraboloid}
+	m_flip{false}, m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{shape_paraboloid}
 {
 	Node::m_dome = this;
 	Loads::m_dome = this;
@@ -49,6 +49,15 @@ Dome::~Dome(void)
 }
 
 //data
+bool Dome::flip(bool flip)
+{
+	return m_flip = flip;
+}
+bool Dome::flip(void) const
+{
+	return m_flip;
+}
+
 double Dome::height(void) const
 {
 	return m_height;
@@ -317,8 +326,12 @@ void Dome::setup_elements(void)
 			if(i + 1 != nl)
 			{
 				counter++;
-				m_elements[counter].m_nodes[0] = i * ns + j;
-				m_elements[counter].m_nodes[1] = (i + 1) * ns + (j + 1) % ns;
+				const uint32_t isw = (i + 0) * ns + (j + 0) % ns;
+				const uint32_t ise = (i + 0) * ns + (j + 1) % ns;
+				const uint32_t inw = (i + 1) * ns + (j + 0) % ns;
+				const uint32_t ine = (i + 1) * ns + (j + 1) % ns;
+				m_elements[counter].m_nodes[0] = (!m_flip || i % 2 == 0) ? isw : ise;
+				m_elements[counter].m_nodes[1] = (!m_flip || i % 2 == 0) ? ine : inw;
 			}
 		}
 	}

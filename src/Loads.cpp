@@ -6,7 +6,7 @@
 #include "Dome/inc/Loads.hpp"
 
 //constructor
-Loads::Loads(void) : m_vertical_load{2.50e+03}
+Loads::Loads(void) : m_distributed_load{0, 0, -2.50e+03}
 {
 	return;
 }
@@ -19,13 +19,17 @@ Loads::~Loads(void)
 
 
 //data
-double Loads::vertical_load(void) const
+const double* Loads::distributed_load(void) const
 {
-	return m_vertical_load;
+	return m_distributed_load;
 }
-double Loads::vertical_load(double vertical_load)
+double Loads::distributed_load(uint32_t index) const
 {
-	return m_vertical_load = vertical_load;
+	return m_distributed_load[index];
+}
+double Loads::distributed_load(uint32_t index, double load)
+{
+	return m_distributed_load[index] = load;
 }
 
 //apply
@@ -36,7 +40,6 @@ void Loads::apply(double* fe) const
 	const uint32_t ns = m_dome->sides();
 	const uint32_t nl = m_dome->layers();
 	const uint32_t nu = m_dome->dof_unkown();
-	const double pressure[] = {0, 0, -m_vertical_load};
 	//setup
 	memset(fe, 0, nu * sizeof(double));
 	//apply
@@ -49,18 +52,18 @@ void Loads::apply(double* fe) const
 				nodes[0] = (i + 0) * ns + (j + 0) % ns;
 				nodes[1] = (i + 0) * ns + (j + 1) % ns;
 				nodes[2] = (i + 1) * ns + (j + 1) % ns;
-				apply(fe, nodes, pressure);
+				apply(fe, nodes, m_distributed_load);
 				nodes[0] = (i + 0) * ns + (j + 0) % ns;
 				nodes[1] = (i + 1) * ns + (j + 1) % ns;
 				nodes[2] = (i + 1) * ns + (j + 0) % ns;
-				apply(fe, nodes, pressure);
+				apply(fe, nodes, m_distributed_load);
 			}
 			else
 			{
 				nodes[2] = nl * ns;
 				nodes[0] = (i + 0) * ns + (j + 0) % ns;
 				nodes[1] = (i + 0) * ns + (j + 1) % ns;
-				apply(fe, nodes, pressure);
+				apply(fe, nodes, m_distributed_load);
 			}
 		}
 	}

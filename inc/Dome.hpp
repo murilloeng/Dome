@@ -25,6 +25,9 @@ public:
 	~Dome(void);
 
 	//data
+	bool flip(bool);
+	bool flip(void) const;
+
 	double height(double);
 	double height(void) const;
 	
@@ -82,6 +85,7 @@ private:
 	void setup_elements(void);
 
 	//data
+	bool m_flip;
 	bool m_solved;
 	double m_height;
 	double m_radius;

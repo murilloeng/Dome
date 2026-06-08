@@ -12,8 +12,9 @@ public:
 	~Loads(void);
 
 	//data
-	double vertical_load(double);
-	double vertical_load(void) const;
+	double distributed_load(uint32_t) const;
+	double distributed_load(uint32_t, double);
+	const double* distributed_load(void) const;
 
 private:
 	//apply
@@ -22,7 +23,7 @@ private:
 
 	//data
 	static Dome* m_dome;
-	double m_vertical_load;
+	double m_distributed_load[3];
 
 	//friends
 	friend class Dome;
