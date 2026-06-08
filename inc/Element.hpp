@@ -5,6 +5,7 @@
 
 //Dome
 #include "Dome/inc/MaterialPoint.hpp"
+#include "Dome/inc/StrainMeasure.hpp"
 
 class Dome;
 
@@ -29,16 +30,20 @@ public:
 
 private:
 	//strains
-	double strain_hessian(double) const;
-	double strain_measure(double) const;
-	double strain_gradient(double) const;
+	static double strain_hessian(double);
+	static double strain_measure(double);
+	static double strain_gradient(double);
+
+	static StrainMeasure strain_measure(void);
+	static StrainMeasure strain_measure(StrainMeasure);
 
 	//data
-	static Dome* m_dome;
-
 	double m_f, m_K;
 	uint32_t m_nodes[2];
 	MaterialPoint m_material_point;
+
+	static Dome* m_dome;
+	static StrainMeasure m_strain_measure;
 
 	//friends
 	friend class Dome;

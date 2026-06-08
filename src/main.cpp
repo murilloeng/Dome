@@ -57,7 +57,6 @@ int main(void)
 	const uint32_t ns = 10;
 	const uint32_t nl = 10;
 	//setup
-	dome.flip(true);
 	dome.sides(ns);
 	dome.layers(nl);
 	//solve

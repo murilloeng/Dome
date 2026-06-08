@@ -118,18 +118,37 @@ void Element::internal_force(double* f, const double* x) const
 }
 
 //strains
-double Element::strain_hessian(double s) const
+double Element::strain_hessian(double s)
 {
-	return -1 / s / s;
+	return 
+		m_strain_measure == StrainMeasure::Linear ? 0 :
+		m_strain_measure == StrainMeasure::Quadratic ? 1 :
+		m_strain_measure == StrainMeasure::Logarithmic ? -1 / s / s : 0;
 }
-double Element::strain_measure(double s) const
+double Element::strain_measure(double s)
 {
-	return log(s);
+	return 
+		m_strain_measure == StrainMeasure::Linear ? s :
+		m_strain_measure == StrainMeasure::Quadratic ? (s * s - 1) / 2 :
+		m_strain_measure == StrainMeasure::Logarithmic ? log(s) : 0;
 }
-double Element::strain_gradient(double s) const
+double Element::strain_gradient(double s)
 {
-	return 1 / s;
+	return 
+		m_strain_measure == StrainMeasure::Linear ? 1 :
+		m_strain_measure == StrainMeasure::Quadratic ? s :
+		m_strain_measure == StrainMeasure::Logarithmic ? 1 / s : 0;
+}
+
+StrainMeasure Element::strain_measure(void)
+{
+	return m_strain_measure;
+}
+StrainMeasure Element::strain_measure(StrainMeasure strain_measure)
+{
+	return m_strain_measure = strain_measure;
 }
 
 //static data
 Dome* Element::m_dome = nullptr;
+StrainMeasure Element::m_strain_measure = StrainMeasure::Logarithmic;

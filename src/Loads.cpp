@@ -68,7 +68,7 @@ void Loads::apply(double* fe) const
 		}
 	}
 }
-void Loads::apply(double* fe, const uint32_t* nodes, const double* pressure) const
+void Loads::apply(double* fe, const uint32_t* nodes, const double* distributed_load) const
 {
 	//data
 	const uint32_t nu = m_dome->dof_unkown();
@@ -83,7 +83,7 @@ void Loads::apply(double* fe, const uint32_t* nodes, const double* pressure) con
 		for(uint32_t j = 0; j < 3; j++)
 		{
 			const uint32_t dof = m_dome->node(nodes[i]).dof(j);
-			if(dof < nu) fe[dof] += A * pressure[j];
+			if(dof < nu) fe[dof] += A * distributed_load[j];
 		}
 	}
 }
