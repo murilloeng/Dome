@@ -162,7 +162,7 @@ void Draw::update_elements(void)
 	//vbo data
 	for(uint32_t i = 0; i < nn; i++)
 	{
-		vbo_ptr[i].m_color = "blue";
+		vbo_ptr[i].m_color = "black";
 		vbo_ptr[i].m_position = m_dome->node(i).position();
 		if(m_deformed) vbo_ptr[i].m_position += m_dome->node(i).state() + 3 * m_step;
 	}

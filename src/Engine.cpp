@@ -125,6 +125,7 @@ void Engine::setup_scene(void)
 	//objects
 	m_draw = new Draw;
 	m_scene->add_object(m_draw);
+	m_scene->background("#FFFAFA");
 	//screen
 	int32_t width, height;
 	glfwGetWindowSize(m_window, &width, &height);

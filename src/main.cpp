@@ -55,7 +55,7 @@ int main(void)
 	//data
 	Dome dome;
 	const uint32_t ns = 10;
-	const uint32_t nl = 2;
+	const uint32_t nl = 10;
 	//setup
 	dome.flip(true);
 	dome.sides(ns);
