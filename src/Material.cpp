@@ -10,7 +10,7 @@
 
 //constructor
 Material::Material(void) :
-	m_inelastic{false}, m_density{7.85e+03}, m_yield_stress{4.40e+08}, m_elastic_modulus{2.10e+11}, m_plastic_modulus{8.00e+09}
+	m_buckling{false}, m_inelastic{false}, m_density{7.85e+03}, m_yield_stress{4.40e+08}, m_elastic_modulus{2.10e+11}, m_plastic_modulus{8.00e+09}
 {
 	return;
 }
@@ -22,6 +22,15 @@ Material::~Material(void)
 }
 
 //data
+bool Material::buckling(void) const
+{
+	return m_buckling;
+}
+bool Material::buckling(bool buckling)
+{
+	return m_buckling;
+}
+
 bool Material::inelastic(void) const
 {
 	return m_inelastic;
@@ -68,23 +77,29 @@ double Material::plastic_modulus(double plastic_modulus)
 }
 
 //return mapping
-void Material::return_mapping(MaterialPoint& materialPoint) const
+void Material::return_mapping(MaterialPoint& material_point) const
 {
 	//data
 	const double sy = m_yield_stress;
 	const double E = m_elastic_modulus;
-	double& s = materialPoint.m_stress;
-	double& K = materialPoint.m_stiffness;
-	const double e = materialPoint.m_strain;
-	double& ep_new = materialPoint.m_plastic_strain_new;
-	const double ep_old = materialPoint.m_plastic_strain_old;
-	//return mapping
-	K = E;
-	s = E * (e - ep_old);
+	const double e = material_point.m_strain;
+	const double& s = material_point.m_stress;
+	const double sb = material_point.m_buckling_stress;
+	const double ep_old = material_point.m_plastic_strain_old;
+	//predictor
+	material_point.m_stiffness = E;
+	material_point.m_stress = E * (e - ep_old);
+	//buckling
+	if(m_buckling && s < -sb)
+	{
+		material_point.m_stress = -sb;
+		material_point.m_stiffness = 0;
+	}
+	//plasticity
 	if(m_inelastic && fabs(s) > sy)
 	{
-		K = 0;
-		s = sy * math::sign(s);
-		ep_new = ep_old + (s - sy * math::sign(s)) / E;
+		material_point.m_stiffness = 0;
+		material_point.m_stress = sy * math::sign(s);
+		material_point.m_plastic_strain_new = ep_old + (s - sy * math::sign(s)) / E;
 	}
 }

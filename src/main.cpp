@@ -41,7 +41,7 @@ void solve_static(Dome& dome)
 	const uint32_t nu = dome.dof_unkown();
 	math::solvers::NewtonRaphson& solver = dome.solver_static();
 	//setup
-	solver.m_dp0 = 1.00e-00;
+	solver.m_dp0 = 1.00e-03;
 	solver.m_step_max = 2000;
 	solver.m_watch_dof = nu - 1;
 	solver.m_continuation.m_type = math::solvers::Continuation::Type::StateControl;
@@ -59,6 +59,7 @@ int main(void)
 	//setup
 	dome.sides(ns);
 	dome.layers(nl);
+	dome.height(1.00e-01);
 	//solve
 	solve_static(dome);
 	//plot

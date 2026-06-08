@@ -308,6 +308,9 @@ void Dome::setup_elements(void)
 	const uint32_t ns = m_sides;
 	const uint32_t nl = m_layers;
 	const uint32_t ne = (3 * nl - 1) * ns;
+	const double A = m_section.area();
+	const double I = m_section.inertia();
+	const double E = m_material.elastic_modulus();
 	//setup
 	m_elements.resize(ne);
 	for(uint32_t i = 0; i < nl; i++)
@@ -334,5 +337,16 @@ void Dome::setup_elements(void)
 				m_elements[counter].m_nodes[1] = (!m_flip || i % 2 == 0) ? ine : inw;
 			}
 		}
+	}
+	//buckling
+	const double r = sqrt(I / A);
+	for(Element& element : m_elements)
+	{
+		//data
+		const math::Vec3 x1 = m_nodes[element.m_nodes[0]].m_position;
+		const math::Vec3 x2 = m_nodes[element.m_nodes[1]].m_position;
+		//buckling
+		const double L = (x2 - x1).norm();
+		element.m_material_point.m_buckling_stress = pow(M_PI * r / L, 2) * E;
 	}
 }

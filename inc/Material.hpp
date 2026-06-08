@@ -1,5 +1,6 @@
 #pragma once
 
+class Dome;
 class MaterialPoint;
 
 class Material
@@ -12,6 +13,9 @@ public:
 	~Material(void);
 
 	//data
+	bool buckling(bool);
+	bool buckling(void) const;
+
 	bool inelastic(bool);
 	bool inelastic(void) const;
 
@@ -32,9 +36,13 @@ public:
 
 private:
 	//data
+	bool m_buckling;
 	bool m_inelastic;
 	double m_density;
 	double m_yield_stress;
 	double m_elastic_modulus;
 	double m_plastic_modulus;
+
+	//friends
+	friend class Dome;
 };
