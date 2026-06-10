@@ -28,7 +28,7 @@ bool Material::buckling(void) const
 }
 bool Material::buckling(bool buckling)
 {
-	return m_buckling;
+	return m_buckling = buckling;
 }
 
 bool Material::inelastic(void) const
