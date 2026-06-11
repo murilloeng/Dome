@@ -7,6 +7,8 @@
 #include "Dome/inc/Dome.hpp"
 
 //Math
+#include "Math/inc/Linear/Eigen.hpp"
+#include "Math/inc/Miscellaneous/util.hpp"
 #include "Math/inc/Solvers/NewtonRaphson.hpp"
 
 //shapes
@@ -35,7 +37,8 @@ static double default_twist(double Hi, double Ht)
 
 //constructor
 Dome::Dome(void) : 
-	m_flip{false}, m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{shape_paraboloid}
+	m_flip{false}, m_solved{false}, m_height{1.00e+00}, m_radius{1.00e+00}, 
+	m_sides{3}, m_layers{1}, m_twist{default_twist}, m_shape{shape_paraboloid}
 {
 	Node::m_dome = this;
 	Loads::m_dome = this;
@@ -169,6 +172,42 @@ const std::vector<Element>& Dome::elements(void) const
 math::solvers::NewtonRaphson& Dome::solver_static(void)
 {
 	return m_solver_static;
+}
+
+
+//info
+double Dome::surface(void) const
+{
+	//data
+	double A = 0;
+	math::Vec3 x[4];
+	const uint32_t ns = m_sides;
+	const uint32_t nl = m_layers;
+	//apply
+	for(uint32_t i = 0; i < nl; i++)
+	{
+		for(uint32_t j = 0; j < ns; j++)
+		{
+			if(i + 1 != nl)
+			{
+				x[0] = m_nodes[(i + 0) * ns + (j + 0) % ns].m_position;
+				x[1] = m_nodes[(i + 0) * ns + (j + 1) % ns].m_position;
+				x[2] = m_nodes[(i + 1) * ns + (j + 1) % ns].m_position;
+				x[3] = m_nodes[(i + 1) * ns + (j + 0) % ns].m_position;
+				A += (x[1] - x[0]).cross(x[2] - x[0]).norm() / 2;
+				A += (x[2] - x[0]).cross(x[3] - x[0]).norm() / 2;
+			}
+			else
+			{
+				x[2] = m_nodes[nl * ns].m_position;
+				x[0] = m_nodes[(i + 0) * ns + (j + 0) % ns].m_position;
+				x[1] = m_nodes[(i + 0) * ns + (j + 1) % ns].m_position;
+				A += (x[1] - x[0]).cross(x[2] - x[0]).norm() / 2;
+			}
+		}
+	}
+	//return
+	return A;
 }
 
 //save
@@ -319,11 +358,11 @@ void Dome::setup_elements(void)
 		{
 			//borttom
 			counter++;
-			m_elements[counter].m_nodes[0] = i * ns + j;
-			m_elements[counter].m_nodes[1] = i * ns + (j + 1) % ns;
+			m_elements[counter].m_nodes[0] = (i + 0) * ns + (j + 0) % ns;
+			m_elements[counter].m_nodes[1] = (i + 0) * ns + (j + 1) % ns;
 			//vertical
 			counter++;
-			m_elements[counter].m_nodes[0] = i * ns + j;
+			m_elements[counter].m_nodes[0] = (i + 0) * ns + (j + 0) % ns;
 			m_elements[counter].m_nodes[1] = i + 1 != nl ? (i + 1) * ns + j : nl * ns;
 			//diagonal
 			if(i + 1 != nl)

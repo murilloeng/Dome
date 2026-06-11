@@ -76,14 +76,14 @@ void Loads::apply(double* fe, const uint32_t* nodes, const double* distributed_l
 	const math::Vec3 x2 = m_dome->node(nodes[1]).position();
 	const math::Vec3 x3 = m_dome->node(nodes[2]).position();
 	//area
-	const double A = (x2 - x1).cross(x3 - x1).norm();
+	const double A = (x2 - x1).cross(x3 - x1).norm() / 2;
 	//apply
 	for(uint32_t i = 0; i < 3; i++)
 	{
 		for(uint32_t j = 0; j < 3; j++)
 		{
 			const uint32_t dof = m_dome->node(nodes[i]).dof(j);
-			if(dof < nu) fe[dof] += A * distributed_load[j];
+			if(dof < nu) fe[dof] += A * distributed_load[j] / 3;
 		}
 	}
 }

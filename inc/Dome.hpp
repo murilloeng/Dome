@@ -30,13 +30,13 @@ public:
 
 	double height(double);
 	double height(void) const;
-	
+
 	double radius(double);
 	double radius(void) const;
-	
+
 	uint32_t sides(uint32_t);
 	uint32_t sides(void) const;
-	
+
 	uint32_t layers(uint32_t);
 	uint32_t layers(void) const;
 
@@ -64,6 +64,9 @@ public:
 	const std::vector<Element>& elements(void) const;
 
 	math::solvers::NewtonRaphson& solver_static(void);
+
+	//info
+	double surface(void) const;
 
 	//save
 	void save(const char*) const;
