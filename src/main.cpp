@@ -41,11 +41,12 @@ void solve_static(Dome& dome)
 	const uint32_t nu = dome.dof_unkown();
 	math::solvers::NewtonRaphson& solver = dome.solver_static();
 	//setup
-	solver.m_dp0 = 6.00e+01;
-	solver.m_step_max = 1000;
+	solver.m_dp0 = 5.00e+01;
+	solver.m_step_max = 5000;
 	solver.m_watch_dof = nu - 1;
+	solver.m_stop_criteria.m_x_min = -2 * dome.height();
 	solver.m_continuation.m_type = math::solvers::Continuation::Type::ArcLengthCylindrical;
-	// solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::Type::LoadValuePositive);
+	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	dome.solve_static();
 }
