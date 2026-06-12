@@ -17,6 +17,10 @@ public:
 	~Node(void);
 
 	//data
+	const double* loads(void);
+	double load(uint32_t) const;
+	double load(uint32_t, double);
+
 	uint32_t dof(uint32_t) const;
 	const uint32_t* dof(void) const;
 
@@ -45,6 +49,7 @@ private:
 	static Dome* m_dome;
 
 	uint32_t m_dof[3];
+	double m_loads[3];
 	double m_position[3];
 	double *m_state, *m_velocity, *m_acceleration;
 

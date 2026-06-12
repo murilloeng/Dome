@@ -12,6 +12,8 @@ public:
 	~Loads(void);
 
 	//data
+	double weight(void) const;
+
 	double density(double);
 	double density(void) const;
 

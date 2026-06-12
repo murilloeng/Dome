@@ -174,42 +174,6 @@ math::solvers::NewtonRaphson& Dome::solver_static(void)
 	return m_solver_static;
 }
 
-
-//info
-double Dome::surface(void) const
-{
-	//data
-	double A = 0;
-	math::Vec3 x[4];
-	const uint32_t ns = m_sides;
-	const uint32_t nl = m_layers;
-	//apply
-	for(uint32_t i = 0; i < nl; i++)
-	{
-		for(uint32_t j = 0; j < ns; j++)
-		{
-			if(i + 1 != nl)
-			{
-				x[0] = m_nodes[(i + 0) * ns + (j + 0) % ns].m_position;
-				x[1] = m_nodes[(i + 0) * ns + (j + 1) % ns].m_position;
-				x[2] = m_nodes[(i + 1) * ns + (j + 1) % ns].m_position;
-				x[3] = m_nodes[(i + 1) * ns + (j + 0) % ns].m_position;
-				A += (x[1] - x[0]).cross(x[2] - x[0]).norm() / 2;
-				A += (x[2] - x[0]).cross(x[3] - x[0]).norm() / 2;
-			}
-			else
-			{
-				x[2] = m_nodes[nl * ns].m_position;
-				x[0] = m_nodes[(i + 0) * ns + (j + 0) % ns].m_position;
-				x[1] = m_nodes[(i + 0) * ns + (j + 1) % ns].m_position;
-				A += (x[1] - x[0]).cross(x[2] - x[0]).norm() / 2;
-			}
-		}
-	}
-	//return
-	return A;
-}
-
 //save
 void Dome::save(const char* path) const
 {
@@ -300,6 +264,49 @@ void Dome::solve_buckling(void)
 void Dome::solve_harmonic(void)
 {
 	return;
+}
+
+
+//loads
+void Dome::apply_load_on_layer(uint32_t layer, const double* load)
+{
+	//data
+	const uint32_t ns = m_sides;
+	const uint32_t nl = m_layers;
+	//apply
+	if(layer == nl)
+	{
+		m_nodes[ns * nl].m_loads[0] = load[0];
+		m_nodes[ns * nl].m_loads[1] = load[1];
+		m_nodes[ns * nl].m_loads[2] = load[2];
+	}
+	else
+	{
+		for(uint32_t i = 0; i < ns; i++)
+		{
+			m_nodes[layer * ns + i].m_loads[0] = load[0];
+			m_nodes[layer * ns + i].m_loads[1] = load[1];
+			m_nodes[layer * ns + i].m_loads[2] = load[2];
+		}
+	}
+}
+void Dome::apply_load_on_layer(uint32_t layer, uint32_t index, double load)
+{
+	//data
+	const uint32_t ns = m_sides;
+	const uint32_t nl = m_layers;
+	//apply
+	if(layer == nl)
+	{
+		m_nodes[ns * nl].m_loads[index] = load;
+	}
+	else
+	{
+		for(uint32_t i = 0; i < ns; i++)
+		{
+			m_nodes[layer * ns + i].m_loads[index] = load;
+		}
+	}
 }
 
 //kinematics

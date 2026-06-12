@@ -65,12 +65,9 @@ public:
 
 	math::solvers::NewtonRaphson& solver_static(void);
 
-	//info
-	double surface(void) const;
-
 	//save
 	void save(const char*) const;
-
+	
 	//analysis
 	void setup(void);
 	void solve_modal(void);
@@ -78,6 +75,10 @@ public:
 	void solve_dynamic(void);
 	void solve_buckling(void);
 	void solve_harmonic(void);
+
+	//loads
+	void apply_load_on_layer(uint32_t, const double*);
+	void apply_load_on_layer(uint32_t, uint32_t, double);
 
 private:
 	//analysis

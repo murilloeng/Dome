@@ -19,6 +19,44 @@ Loads::~Loads(void)
 
 
 //data
+double Loads::weight(void) const
+{
+	//data
+	double W = 0;
+	const double g = 9.81;
+	const double r = m_density;
+	const double t = m_thickness;
+	const uint32_t ns = m_dome->sides();
+	const uint32_t nl = m_dome->layers();
+	//weight
+	math::Vec3 x[4];
+	for(uint32_t i = 0; i < nl; i++)
+	{
+		for(uint32_t j = 0; j < ns; j++)
+		{
+			if(i + 1 != nl)
+			{
+				x[0] = m_dome->node((i + 0) * ns + (j + 0) % ns).position();
+				x[1] = m_dome->node((i + 0) * ns + (j + 1) % ns).position();
+				x[2] = m_dome->node((i + 1) * ns + (j + 1) % ns).position();
+				x[3] = m_dome->node((i + 1) * ns + (j + 0) % ns).position();
+				W += g * r * t * ((x[1] - x[0]).cross(x[2] - x[0]).norm()) / 2;
+				W += g * r * t * ((x[2] - x[0]).cross(x[3] - x[0]).norm()) / 2;
+			}
+			else
+			{
+				x[2] = m_dome->node(ns * nl).position();
+				x[0] = m_dome->node((i + 0) * ns + (j + 0) % ns).position();
+				x[1] = m_dome->node((i + 0) * ns + (j + 1) % ns).position();
+				W += g * r * t * (x[1] - x[0]).cross(x[2] - x[0]).norm() / 2;
+			}
+		}
+		
+	}
+	//return
+	return W;
+}
+
 double Loads::density(void) const
 {
 	return m_density;

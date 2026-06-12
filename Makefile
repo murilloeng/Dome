@@ -55,6 +55,9 @@ math :
 canvas : 
 	+@cd ../Canvas && $(MAKE) -f Makefile m=$m
 
+plot : 
+	@gnuplot -p plot.gp
+
 $(out) : $(obj)
 	@mkdir -p $(dir $@)
 	@$(CXX) $(LNKFLAGS) -o $(out) $(obj) $(libMath) $(libCanvas) $(LIBS)

@@ -1,4 +1,5 @@
 //std
+#include <cstdio>
 #include <cstdlib>
 
 //Dome
@@ -22,13 +23,13 @@ void plot_static(Dome& dome)
 	const uint32_t ns = dome.sides();
 	const uint32_t nl = dome.layers();
 	FILE* file = fopen("data.txt", "w");
-	const uint32_t steps = dome.solver_static().m_step;
+	const double W = dome.loads().weight();
 	//save
-	for(uint32_t i = 0; i < steps; i++)
+	for(uint32_t i = 0; i < dome.solver_static().m_step; i++)
 	{
 		const double u = dome.node(ns * nl).state(i, 2);
 		const double p = dome.solver_static().m_p_data[i];
-		fprintf(file, "%+.6e %+.6e\n", u, p);
+		fprintf(file, "%+.6e %+.6e\n", u, p * W);
 	}
 	//close
 	fclose(file);
@@ -40,6 +41,7 @@ void print_limit_points(Dome& dome)
 	//data
 	const uint32_t ns = dome.sides();
 	const uint32_t nl = dome.layers();
+	const double W = dome.loads().weight();
 	const double* u = dome.node(ns * nl).state();
 	const double* p = dome.solver_static().m_p_data;
 	for(uint32_t i = 1; i + 1 < dome.solver_static().m_step; i++)
@@ -47,12 +49,12 @@ void print_limit_points(Dome& dome)
 		//minimum
 		if(p[i] < p[i - 1] && p[i] < p[i + 1])
 		{
-			printf("Limit(-) Step: %4d Load: %+.6e Displacement: %+.6e\n", i, p[i], u[3 * i + 2]);
+			printf("Limit(-) Step: %4d Load: %+.6e Displacement: %+.6e\n", i, W * p[i], u[3 * i + 2]);
 		}
 		//maximum
 		if(p[i] > p[i - 1] && p[i] > p[i + 1])
 		{
-			printf("Limit(+) Step: %4d Load: %+.6e Displacement: %+.6e\n", i, p[i], u[3 * i + 2]);
+			printf("Limit(+) Step: %4d Load: %+.6e Displacement: %+.6e\n", i, W * p[i], u[3 * i + 2]);
 		}
 	}
 }
@@ -78,13 +80,14 @@ int main(void)
 {
 	//data
 	Dome dome;
-	const uint32_t ns = 3;
-	const uint32_t nl = 2;
+	const uint32_t ns = 4;
+	const uint32_t nl = 1;
 	//setup
 	dome.sides(ns);
 	dome.layers(nl);
 	//solve
 	solve_static(dome);
+	printf("Weight: %+.6e\n", dome.loads().weight());
 	//plot
 	plot_static(dome);
 	print_limit_points(dome);

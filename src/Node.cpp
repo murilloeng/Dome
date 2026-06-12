@@ -3,7 +3,7 @@
 #include "Dome/inc/Node.hpp"
 
 //constructor
-Node::Node(void) : m_dof{0, 0, 0}, m_position{0, 0, 0}, m_state{nullptr}, m_velocity{nullptr}, m_acceleration{nullptr}
+Node::Node(void) : m_dof{0, 0, 0}, m_loads{0, 0, 0}, m_position{0, 0, 0}, m_state{nullptr}, m_velocity{nullptr}, m_acceleration{nullptr}
 {
 	return;
 }
@@ -17,6 +17,19 @@ Node::~Node(void)
 }
 
 //data
+const double* Node::loads(void)
+{
+	return m_loads;
+}
+double Node::load(uint32_t index) const
+{
+	return m_loads[index];
+}
+double Node::load(uint32_t index, double load)
+{
+	return m_loads[index] = load;
+}
+
 uint32_t Node::dof(uint32_t index) const
 {
 	return m_dof[index];

@@ -151,4 +151,4 @@ StrainMeasure Element::strain_measure(StrainMeasure strain_measure)
 
 //static data
 Dome* Element::m_dome = nullptr;
-StrainMeasure Element::m_strain_measure = StrainMeasure::Logarithmic;
+StrainMeasure Element::m_strain_measure = StrainMeasure::Quadratic;
