@@ -12,9 +12,11 @@ public:
 	~Loads(void);
 
 	//data
-	double distributed_load(uint32_t) const;
-	double distributed_load(uint32_t, double);
-	const double* distributed_load(void) const;
+	double density(double);
+	double density(void) const;
+
+	double thickness(double);
+	double thickness(void) const;
 
 private:
 	//apply
@@ -22,8 +24,9 @@ private:
 	void apply(double*, const uint32_t*, const double*) const;
 
 	//data
+	double m_density;
+	double m_thickness;
 	static Dome* m_dome;
-	double m_distributed_load[3];
 
 	//friends
 	friend class Dome;

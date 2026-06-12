@@ -6,7 +6,7 @@
 #include "Dome/inc/Loads.hpp"
 
 //constructor
-Loads::Loads(void) : m_distributed_load{0, 0, -2.50e+03}
+Loads::Loads(void) : m_density{2.50e+03}, m_thickness{1.00e-01}
 {
 	return;
 }
@@ -19,17 +19,22 @@ Loads::~Loads(void)
 
 
 //data
-const double* Loads::distributed_load(void) const
+double Loads::density(void) const
 {
-	return m_distributed_load;
+	return m_density;
 }
-double Loads::distributed_load(uint32_t index) const
+double Loads::density(double density)
 {
-	return m_distributed_load[index];
+	return m_density = density;
 }
-double Loads::distributed_load(uint32_t index, double load)
+
+double Loads::thickness(void) const
 {
-	return m_distributed_load[index] = load;
+	return m_thickness;
+}
+double Loads::thickness(double thickness)
+{
+	return m_thickness = thickness;
 }
 
 //apply
@@ -40,6 +45,11 @@ void Loads::apply(double* fe) const
 	const uint32_t ns = m_dome->sides();
 	const uint32_t nl = m_dome->layers();
 	const uint32_t nu = m_dome->dof_unkown();
+	//load
+	const double g = 9.81e+00;
+	const double r = m_density;
+	const double t = m_thickness;
+	const double p[] = {0, 0, -g * r * t};
 	//setup
 	memset(fe, 0, nu * sizeof(double));
 	//apply
@@ -52,18 +62,18 @@ void Loads::apply(double* fe) const
 				nodes[0] = (i + 0) * ns + (j + 0) % ns;
 				nodes[1] = (i + 0) * ns + (j + 1) % ns;
 				nodes[2] = (i + 1) * ns + (j + 1) % ns;
-				apply(fe, nodes, m_distributed_load);
+				apply(fe, nodes, p);
 				nodes[0] = (i + 0) * ns + (j + 0) % ns;
 				nodes[1] = (i + 1) * ns + (j + 1) % ns;
 				nodes[2] = (i + 1) * ns + (j + 0) % ns;
-				apply(fe, nodes, m_distributed_load);
+				apply(fe, nodes, p);
 			}
 			else
 			{
 				nodes[2] = nl * ns;
 				nodes[0] = (i + 0) * ns + (j + 0) % ns;
 				nodes[1] = (i + 0) * ns + (j + 1) % ns;
-				apply(fe, nodes, m_distributed_load);
+				apply(fe, nodes, p);
 			}
 		}
 	}

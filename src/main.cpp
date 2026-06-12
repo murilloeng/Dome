@@ -28,10 +28,33 @@ void plot_static(Dome& dome)
 	{
 		const double u = dome.node(ns * nl).state(i, 2);
 		const double p = dome.solver_static().m_p_data[i];
-		fprintf(file, "%+.6e %+.6e\n", u, -p * dome.loads().distributed_load(2));
+		fprintf(file, "%+.6e %+.6e\n", u, p);
 	}
 	//close
 	fclose(file);
+}
+
+//data
+void print_limit_points(Dome& dome)
+{
+	//data
+	const uint32_t ns = dome.sides();
+	const uint32_t nl = dome.layers();
+	const double* u = dome.node(ns * nl).state();
+	const double* p = dome.solver_static().m_p_data;
+	for(uint32_t i = 1; i + 1 < dome.solver_static().m_step; i++)
+	{
+		//minimum
+		if(p[i] < p[i - 1] && p[i] < p[i + 1])
+		{
+			printf("Limit(-) Step: %4d Load: %+.6e Displacement: %+.6e\n", i, p[i], u[3 * i + 2]);
+		}
+		//maximum
+		if(p[i] > p[i - 1] && p[i] > p[i + 1])
+		{
+			printf("Limit(+) Step: %4d Load: %+.6e Displacement: %+.6e\n", i, p[i], u[3 * i + 2]);
+		}
+	}
 }
 
 //solve
@@ -42,10 +65,10 @@ void solve_static(Dome& dome)
 	math::solvers::NewtonRaphson& solver = dome.solver_static();
 	//setup
 	solver.m_dp0 = 5.00e+01;
-	solver.m_step_max = 5000;
+	solver.m_step_max = 2000;
 	solver.m_watch_dof = nu - 1;
 	solver.m_stop_criteria.m_x_min = -2 * dome.height();
-	solver.m_continuation.m_type = math::solvers::Continuation::Type::ArcLengthCylindrical;
+	solver.m_continuation.m_type = math::solvers::Continuation::Type::MinimalNorm;
 	solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	dome.solve_static();
@@ -64,8 +87,7 @@ int main(void)
 	solve_static(dome);
 	//plot
 	plot_static(dome);
-	//draw
-	draw(dome);
+	print_limit_points(dome);
 	//return
 	return EXIT_SUCCESS;
 }

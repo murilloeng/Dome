@@ -71,9 +71,6 @@ public:
 	//save
 	void save(const char*) const;
 
-	//loads
-	void apply_loads_vertical(void);
-
 	//analysis
 	void setup(void);
 	void solve_modal(void);
