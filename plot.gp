@@ -1,5 +1,5 @@
 #stats
-stats "data.txt" using (-1e3 * $1) : ($2 / 1e3) nooutput
+stats "plot.txt" using (-1e3 * $3) : ($4 / 1e3) nooutput
 
 #setup
 set grid
@@ -10,7 +10,7 @@ set xrange [STATS_min_x : STATS_max_x]
 set yrange [STATS_min_y : STATS_max_y]
 
 #plot
-plot 'data.txt' using (-1e3 * $1) : ($2 / 1e3) with lines linecolor rgb "#0000ff" notitle
+plot 'plot.txt' using (-1e3 * $3) : ($4 / 1e3) with lines linecolor rgb "#0000ff" notitle
 
 exit()
 

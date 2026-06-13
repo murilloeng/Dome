@@ -58,6 +58,9 @@ canvas :
 plot : 
 	@gnuplot -p plot.gp
 
+animation :
+	@./animation.sh
+
 $(out) : $(obj)
 	@mkdir -p $(dir $@)
 	@$(CXX) $(LNKFLAGS) -o $(out) $(obj) $(libMath) $(libCanvas) $(LIBS)

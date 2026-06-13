@@ -294,7 +294,7 @@ void Dome::apply_load_on_layer(uint32_t layer, uint32_t index, double load)
 	{
 		for(uint32_t i = 0; i < ns; i++)
 		{
-			m_nodes[layer * ns + i].m_loads[index] = load / ns;
+			m_nodes[layer * ns + i].m_loads[index] += load / ns;
 		}
 	}
 }

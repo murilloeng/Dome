@@ -22,13 +22,15 @@ void plot_static(Dome& dome)
 	//data
 	const uint32_t ns = dome.sides();
 	const uint32_t nl = dome.layers();
-	FILE* file = fopen("data.txt", "w");
+	FILE* file = fopen("plot.txt", "w");
 	//save
 	for(uint32_t i = 0; i < dome.solver_static().m_step; i++)
 	{
-		const double u = dome.node(ns * nl).state(i, 2);
-		const double p = dome.solver_static().m_p_data[i];
-		fprintf(file, "%+.6e %+.6e\n", u, p);
+		const double u1 = dome.node(ns * nl).state(i, 0);
+		const double u2 = dome.node(ns * nl).state(i, 1);
+		const double u3 = dome.node(ns * nl).state(i, 2);
+		const double ps = dome.solver_static().m_p_data[i];
+		fprintf(file, "%+.6e %+.6e %+.6e %+.6e\n", u1, u2, u3, ps);
 	}
 	//close
 	fclose(file);
@@ -84,7 +86,6 @@ int main(void)
 	dome.sides(ns);
 	dome.layers(nl);
 	dome.setup_model();
-	dome.apply_load_on_layer(1, 2, -1e3);
 	dome.apply_load_on_layer(2, 2, -1e3);
 	//solve
 	solve_static(dome);
