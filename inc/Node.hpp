@@ -38,13 +38,14 @@ public:
 
 	const double* acceleration(void) const;
 	double acceleration(uint32_t, uint32_t) const;
-
+	
+private:
 	//analysis
+	void assemble(double*) const;
 	void allocate(uint32_t, bool);
 	void record(const double*, uint32_t);
 	void record(const double*, const double*, const double*, uint32_t);
 
-private:
 	//data
 	static Dome* m_dome;
 

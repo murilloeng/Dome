@@ -5,7 +5,7 @@ stats "data.txt" using (-1e3 * $1) : ($2 / 1e3) nooutput
 set grid
 set key above
 set xlabel "u (mm)"
-set ylabel "F (kN)" norotate
+set ylabel "{/Symbol l}" norotate
 set xrange [STATS_min_x : STATS_max_x]
 set yrange [STATS_min_y : STATS_max_y]
 

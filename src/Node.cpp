@@ -92,6 +92,16 @@ double Node::acceleration(uint32_t step, uint32_t dof) const
 }
 
 //analysis
+void Node::assemble(double* fe) const
+{
+	//data
+	const uint32_t nu = m_dome->dof_unkown();
+	//assemble
+	for(uint32_t i = 0; i < 3; i++)
+	{
+		if(m_dof[i] < nu) fe[m_dof[i]] = m_loads[i];
+	}
+}
 void Node::allocate(uint32_t steps, bool dynamics)
 {
 	//data

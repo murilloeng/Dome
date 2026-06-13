@@ -6,7 +6,6 @@
 
 //Dome
 #include "Dome/inc/Node.hpp"
-#include "Dome/inc/Loads.hpp"
 #include "Dome/inc/Element.hpp"
 #include "Dome/inc/Section.hpp"
 #include "Dome/inc/Material.hpp"
@@ -42,9 +41,6 @@ public:
 
 	uint32_t dof_unkown(void) const;
 
-	Loads& loads(void);
-	const Loads& loads(void) const;
-
 	Node& node(uint32_t);
 	const Node& node(uint32_t) const;
 
@@ -69,7 +65,7 @@ public:
 	void save(const char*) const;
 	
 	//analysis
-	void setup(void);
+	void setup_model(void);
 	void solve_modal(void);
 	void solve_static(void);
 	void solve_dynamic(void);
@@ -93,7 +89,6 @@ private:
 	uint32_t m_sides;
 	uint32_t m_layers;
 
-	Loads m_loads;
 	Section m_section;
 	Material m_material;
 	std::vector<Node> m_nodes;
