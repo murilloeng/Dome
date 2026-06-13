@@ -7,9 +7,9 @@ stats "plot.txt" using (-1e3 * $3) : ($4 / 1e3) nooutput
 #setup
 set grid
 set key above
-set terminal png
 set xlabel "u (mm)"
 set ylabel "Load factor"
+set terminal png size 900, 900
 set xrange [STATS_min_x : STATS_max_x]
 set yrange [STATS_min_y : STATS_max_y]
 
