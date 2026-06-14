@@ -23,6 +23,9 @@ public:
 	//destructor
 	~Dome(void);
 
+	//save
+	void save(void) const;
+
 	//data
 	bool flip(bool);
 	bool flip(void) const;
@@ -61,9 +64,6 @@ public:
 
 	math::solvers::NewtonRaphson& solver_static(void);
 
-	//save
-	void save(const char*) const;
-	
 	//analysis
 	void setup_model(void);
 	void solve_modal(void);

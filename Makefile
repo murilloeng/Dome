@@ -49,13 +49,16 @@ debug : exe
 exe : math canvas $(out)
 	@echo 'executable build - $(mode): complete!'
 
-math : 
+math :
 	+@cd ../Math && $(MAKE) -f Makefile m=$m
 
-canvas : 
+canvas :
 	+@cd ../Canvas && $(MAKE) -f Makefile m=$m
 
-plot : 
+draw :
+	@python3 draw.py
+
+plot :
 	@gnuplot -p plot.gp
 
 animation :

@@ -16,6 +16,9 @@ public:
 	//destructor
 	~Node(void);
 
+	//save
+	void save(uint32_t) const;
+
 	//data
 	const double* loads(void);
 	double load(uint32_t) const;

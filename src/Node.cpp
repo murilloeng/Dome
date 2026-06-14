@@ -1,3 +1,6 @@
+//std
+#include <cstdio>
+
 //Dome
 #include "Dome/inc/Dome.hpp"
 #include "Dome/inc/Node.hpp"
@@ -14,6 +17,26 @@ Node::~Node(void)
 	delete[] m_state;
 	delete[] m_velocity;
 	delete[] m_acceleration;
+}
+
+//save
+void Node::save(uint32_t index) const
+{
+	//data
+	char path[128];
+	sprintf(path, "Deformed/N%d.txt", index);
+	//save
+	FILE* file = fopen(path, "w");
+	for(uint32_t i = 0; i < m_dome->solver_static().m_step; i++)
+	{
+		const double x[] = {
+			m_position[0] + m_state[3 * i + 0],
+			m_position[1] + m_state[3 * i + 1],
+			m_position[2] + m_state[3 * i + 2]
+		};
+		fprintf(file, "%+.6e %+.6e %+.6e\n", x[0], x[1], x[2]);
+	}
+	fclose(file);
 }
 
 //data

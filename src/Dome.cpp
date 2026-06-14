@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
 
 //Dome
 #include "Dome/inc/Dome.hpp"
@@ -48,6 +49,39 @@ Dome::Dome(void) :
 Dome::~Dome(void)
 {
 	return;
+}
+
+//save
+void Dome::save(void) const
+{
+	//open
+	FILE* file = fopen("Model.txt", "w");
+	fprintf(file, "%zd\n", m_nodes.size());
+	fprintf(file, "%zd\n", m_elements.size());
+	fprintf(file, "%d\n", m_solver_static.m_step);
+	std::filesystem::create_directory("Deformed");
+	//nodes
+	uint32_t index = 0;
+	for(const Node& node : m_nodes)
+	{
+		node.save(index++);
+		for(uint32_t i = 0; i < 3; i++)
+		{
+			fprintf(file, "%+.6e ", node.position(i));
+		}
+		fprintf(file, "\n");
+	}
+	//elements
+	for(const Element& element : m_elements)
+	{
+		for(uint32_t i = 0; i < 2; i++)
+		{
+			fprintf(file, "%d ", element.node(i));
+		}
+		fprintf(file, "\n");
+	}
+	//close
+	fclose(file);
 }
 
 //data
@@ -162,35 +196,6 @@ const std::vector<Element>& Dome::elements(void) const
 math::solvers::NewtonRaphson& Dome::solver_static(void)
 {
 	return m_solver_static;
-}
-
-//save
-void Dome::save(const char* path) const
-{
-	//open
-	FILE* file = fopen(path, "w");
-	//nodes
-	fprintf(file, "%zd\n", m_nodes.size());
-	for(const Node& node : m_nodes)
-	{
-		for(uint32_t i = 0; i < 3; i++)
-		{
-			fprintf(file, "%+.6e ", node.position(i));
-		}
-		fprintf(file, "\n");
-	}
-	//elements
-	fprintf(file, "%zd\n", m_elements.size());
-	for(const Element& element : m_elements)
-	{
-		for(uint32_t i = 0; i < 2; i++)
-		{
-			fprintf(file, "%d ", element.node(i));
-		}
-		fprintf(file, "\n");
-	}
-	//close
-	fclose(file);
 }
 
 //analysis
