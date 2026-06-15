@@ -11,3 +11,6 @@ ffmpeg -y -loglevel error -framerate 20 -i plot-%03d.png -c:v libx264 -pix_fmt y
 
 #remove
 rm plot-*.png
+
+#play
+gio open animation.mp4
