@@ -18,7 +18,7 @@
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Type.hpp"
-#include "FEA/inc/Analysis/Solvers/Solver.hpp"
+#include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
 
 //Sections
 #include "Sections/inc/CHS.hpp"
@@ -125,8 +125,11 @@ void Dome::solve_static(void)
 	analysis()->solver()->load_combination(0);
 	analysis()->solver()->watch_dof().node(2 * m_sides);
 	analysis()->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
+	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->step_max(1000);
 	//solve
 	solve();
+	//save
+	analysis()->solver()->save("Static Nonlinear.txt");
 }
 void Dome::solve_dynamic(void)
 {
