@@ -181,18 +181,18 @@ void Engine::update_supports(GLFWwindow* window)
 }
 void Engine::update_step(GLFWwindow * window, bool increase)
 {
-	//data
-	const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
-	//step
-	const uint32_t step_1 = engine->m_draw->step();
-	const uint32_t steps = engine->m_dome->solver_static().m_step;
-	const uint32_t step_2 = increase ? (step_1 + 1) % (steps + 1) : step_1 != 0 ? step_1 - 1 : steps;
-	//draw
-	engine->m_draw->step(step_2);
-	engine->m_draw->deformed(true);
-	if(!engine->m_show_fps) printf("step: %d\n", step_2);
-	//update
-	engine->m_scene->update();
+	// //data
+	// const Engine* engine = (Engine*) glfwGetWindowUserPointer(window);
+	// //step
+	// const uint32_t step_1 = engine->m_draw->step();
+	// const uint32_t steps = engine->m_dome->solver_static().m_step;
+	// const uint32_t step_2 = increase ? (step_1 + 1) % (steps + 1) : step_1 != 0 ? step_1 - 1 : steps;
+	// //draw
+	// engine->m_draw->step(step_2);
+	// engine->m_draw->deformed(true);
+	// if(!engine->m_show_fps) printf("step: %d\n", step_2);
+	// //update
+	// engine->m_scene->update();
 }
 void Engine::update_framerate(GLFWwindow* window, bool increase)
 {

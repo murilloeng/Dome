@@ -22,14 +22,10 @@ public:
 	bool supports(bool);
 	bool supports(void) const;
 
-	bool surfaces(bool);
-	bool surfaces(void) const;
-
 private:
 	//data
 	bool m_nodes;
 	bool m_loads;
 	bool m_elements;
 	bool m_supports;
-	bool m_surfaces;
 };

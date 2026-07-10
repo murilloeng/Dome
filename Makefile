@@ -2,7 +2,7 @@
 CXX = g++
 WARS = -Wall -Werror
 INCS = -I .. -I /usr/include/freetype2
-LIBS = -l GL -l freetype -l glfw -l umfpack -l fftw3 -l quadrule
+LIBS = -l GL -l freetype -l glfw -l umfpack -l fftw3 -l quadrule -l gmsh
 CXXFLAGS = -std=c++20 -fPIC -pipe -fopenmp -MT $@ -MMD -MP -MF $(subst .o,.d, $@) $(DEFS) $(INCS) $(WARS)
 
 #mode
@@ -25,8 +25,11 @@ endif
 out = dist/$(prof_dir)$(mode)/dome.out
 
 #libraries
+libFEA = ../FEA/dist/$(mode)/libfea.so
 libMath = ../Math/dist/$(mode)/libmath.so
 libCanvas = ../Canvas/dist/$(mode)/libcanvas.so
+libSections = ../Sections/dist/$(mode)/libsections.so
+libMaterials = ../Materials/dist/$(mode)/libmaterials.so
 
 #sources
 src := $(sort $(shell find -path './src/*.cpp'))
@@ -46,11 +49,11 @@ run : exe
 debug : exe
 	gdb ./$(out)
 
-exe : math canvas $(out)
+exe : fea canvas $(out)
 	@echo 'executable build - $(mode): complete!'
 
-math :
-	+@cd ../Math && $(MAKE) -f Makefile m=$m
+fea :
+	+@cd ../FEA && $(MAKE) -f Makefile m=$m
 
 canvas :
 	+@cd ../Canvas && $(MAKE) -f Makefile m=$m
@@ -66,7 +69,7 @@ animation :
 
 $(out) : $(obj)
 	@mkdir -p $(dir $@)
-	@$(CXX) $(LNKFLAGS) -o $(out) $(obj) $(libMath) $(libCanvas) $(LIBS)
+	@$(CXX) $(LNKFLAGS) -o $(out) $(obj) $(libFEA) $(libSections) $(libMaterials) $(libCanvas) $(libMath) $(LIBS)
 	@echo 'executable - $(mode): $@'
 
 build/$(prof_dir)$(mode)/%.o : src/%.cpp build/$(prof_dir)$(mode)/%.d
