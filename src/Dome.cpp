@@ -126,6 +126,8 @@ void Dome::solve_static(void)
 	analysis()->solver()->watch_dof().node(2 * m_sides);
 	analysis()->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
 	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->step_max(1000);
+	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->stop_criteria().state_min(-2 * m_height[1]);
+	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->stop_criteria().add_type(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	solve();
 	//save

@@ -72,7 +72,7 @@ int main(void)
 	dome.sides(3);
 	dome.height(0, 0.1);
 	dome.height(1, 0.2);
-	dome.load(0, 2, -1.00e+05);
+	dome.load(1, 2, -1.00e+06);
 	//solve
 	solve_static(dome);
 	//plot
