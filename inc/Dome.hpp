@@ -25,6 +25,9 @@ public:
 	uint32_t sides(uint32_t);
 	uint32_t sides(void) const;
 
+	double twist(double);
+	double twist(void) const;
+
 	double height(uint32_t) const;
 	double height(uint32_t, double);
 
@@ -38,6 +41,9 @@ public:
 
 	materials::Mechanic* material(void) const;
 
+	//print
+	void print(void) const;
+
 	//solve
 	void solve_modal(void);
 	void solve_static(void);
@@ -48,8 +54,10 @@ public:
 private:
 	//setup
 	void setup_model(void);
+	void setup_loads(void);
 	void setup_nodes(void);
 	void setup_elements(void);
+	void setup_supports(void);
 
 	//data
 	using fea::Model::solve, fea::Model::compute;
@@ -57,6 +65,8 @@ private:
 
 	//data
 	uint32_t m_sides;
+
+	double m_twist;
 	double m_loads[6];
 	double m_height[2];
 	double m_radius[2];

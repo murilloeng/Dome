@@ -62,18 +62,8 @@ void print_limit_points(Dome& dome)
 //solve
 void solve_static(Dome& dome)
 {
-	// //data
-	// const uint32_t nu = dome.dof_unkown();
-	// math::solvers::NewtonRaphson& solver = dome.solver_static();
-	// //setup
-	// solver.m_dp0 = 1.00e+02;
-	// solver.m_step_max = 4000;
-	// solver.m_watch_dof = nu - 1;
-	// solver.m_stop_criteria.m_x_min = -2 * dome.height();
-	// solver.m_continuation.m_type = math::solvers::Continuation::Type::ArcLengthCylindrical;
-	// solver.m_stop_criteria.m_types |= uint32_t(math::solvers::StopCriteria::Type::StateLimitMinimum);
-	// //solve
-	// dome.solve_static();
+	dome.solve_static();
+	dome.print();
 }
 
 int main(void)
