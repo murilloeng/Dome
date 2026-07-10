@@ -59,6 +59,12 @@ private:
 	void setup_elements(void);
 	void setup_supports(void);
 
+	//print
+	void print_loads(void) const;
+	void print_nodes(void) const;
+	void print_elements(void) const;
+	void print_supports(void) const;
+
 	//data
 	using fea::Model::solve, fea::Model::compute;
 	using fea::Model::mesh, fea::Model::boundary, fea::Model::analysis;

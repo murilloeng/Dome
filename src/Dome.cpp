@@ -12,10 +12,13 @@
 #include "FEA/inc/Mesh/Elements/Mechanic/Truss3D.hpp"
 
 #include "FEA/inc/Boundary/Boundary.hpp"
+#include "FEA/inc/Boundary/Loads/Node.hpp"
 #include "FEA/inc/Boundary/Loads/LoadCase.hpp"
+#include "FEA/inc/Boundary/Supports/Support.hpp"
 
 #include "FEA/inc/Analysis/Analysis.hpp"
 #include "FEA/inc/Analysis/Solvers/Type.hpp"
+#include "FEA/inc/Analysis/Solvers/Solver.hpp"
 
 //Sections
 #include "Sections/inc/CHS.hpp"
@@ -101,16 +104,10 @@ materials::Mechanic* Dome::material(void) const
 //print
 void Dome::print(void) const
 {
-	for(const fea::mesh::nodes::Node* node : mesh()->nodes())
-	{
-		const double* x = node->position_ref();
-		printf("x1: %+.2e x2: %+.2e x3: %+.2e\n", x[0], x[1], x[2]);
-	}
-	for(const fea::mesh::elements::Element* element : mesh()->elements())
-	{
-		// const double* x = element->node();
-		// printf("x1: %+.2e x2: %+.2e x3: %+.2e\n", x[0], x[1], x[2]);
-	}
+	print_loads();
+	print_nodes();
+	print_elements();
+	print_supports();
 }
 
 //solve
@@ -122,7 +119,12 @@ void Dome::solve_static(void)
 {
 	//setup
 	setup_model();
+	m_section->compute();
 	analysis()->create_solver(fea::analysis::Type::StaticNonlinear);
+	//solver
+	analysis()->solver()->load_combination(0);
+	analysis()->solver()->watch_dof().node(2 * m_sides);
+	analysis()->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
 	//solve
 	solve();
 }
@@ -181,10 +183,12 @@ void Dome::setup_elements(void)
 {
 	for(uint32_t i = 0; i < m_sides; i++)
 	{
-		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * (i + 0) % m_sides + 1, 2 * m_sides});
-		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * (i + 0) % m_sides + 1, 2 * (i + 1) % m_sides + 1});
-		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * (i + 0) % m_sides + 0, 2 * (i + 0) % m_sides + 1});
-		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * (i + 0) % m_sides + 0, 2 * (i + 1) % m_sides + 1});
+		const uint32_t a = (i + 0) % m_sides;
+		const uint32_t b = (i + 1) % m_sides;
+		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * a + 1, 2 * b + 1});
+		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * a + 0, 2 * a + 1});
+		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * a + 0, 2 * b + 1});
+		mesh()->create_element(fea::mesh::elements::Type::Truss3D, {2 * a + 1, 2 * m_sides});
 	}
 	for(fea::mesh::elements::Element* element : mesh()->elements())
 	{
@@ -199,5 +203,40 @@ void Dome::setup_supports(void)
 		boundary()->create_support(2 * i + 0, fea::mesh::nodes::DOF::Translation_1);
 		boundary()->create_support(2 * i + 0, fea::mesh::nodes::DOF::Translation_2);
 		boundary()->create_support(2 * i + 0, fea::mesh::nodes::DOF::Translation_3);
+	}
+}
+
+//print
+void Dome::print_loads(void) const
+{
+	printf("Loads:\n");
+	for(const fea::boundary::loads::Node* load : boundary()->load_case(0)->loads_nodes())
+	{
+		printf("Node: %2d Dof: %d Value: %+.2e\n", load->node(), (uint32_t) load->dof(), load->value());
+	}
+}
+void Dome::print_nodes(void) const
+{
+	printf("Nodes:\n");
+	for(const fea::mesh::nodes::Node* node : mesh()->nodes())
+	{
+		const double* x = node->position_ref();
+		printf("Index: %2d x1: %+.2e x2: %+.2e x3: %+.2e\n", node->index(), x[0], x[1], x[2]);
+	}
+}
+void Dome::print_elements(void) const
+{
+	printf("Elements:\n");
+	for(const fea::mesh::elements::Element* element : mesh()->elements())
+	{
+		printf("Index: %2d Nodes: %2d %2d\n", element->index(), element->index_node(0), element->index_node(1));
+	}
+}
+void Dome::print_supports(void) const
+{
+	printf("Supports:\n");
+	for(const fea::boundary::Support* support : boundary()->supports())
+	{
+		printf("Node: %2d Dof: %d\n", support->index_node(), (uint32_t) support->dof());
 	}
 }

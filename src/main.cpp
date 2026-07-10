@@ -63,17 +63,14 @@ void print_limit_points(Dome& dome)
 void solve_static(Dome& dome)
 {
 	dome.solve_static();
-	dome.print();
 }
 
 int main(void)
 {
 	//data
 	Dome dome;
-	const uint32_t ns = 3;
-	//setup
-	dome.sides(ns);
-	dome.load(1, 2, -1e3);
+	dome.sides(3);
+	dome.load(0, 2, -1e3);
 	//solve
 	solve_static(dome);
 	//plot
