@@ -5,6 +5,14 @@
 //Dome
 #include "Dome/inc/Engine.hpp"
 
+//FEA
+#include "FEA/inc/Mesh/Mesh.hpp"
+#include "FEA/inc/Mesh/Nodes/DOF.hpp"
+#include "FEA/inc/Mesh/Nodes/Node.hpp"
+
+#include "FEA/inc/Analysis/Analysis.hpp"
+#include "FEA/inc/Analysis/Solvers/StaticNonlinear.hpp"
+
 //draw
 void draw(Dome& dome)
 {
@@ -19,21 +27,20 @@ void draw(Dome& dome)
 //plot
 void plot_static(Dome& dome)
 {
-	// //data
-	// const uint32_t ns = dome.sides();
-	// const uint32_t nl = dome.layers();
-	// FILE* file = fopen("plot.txt", "w");
-	// //save
-	// for(uint32_t i = 0; i < dome.solver_static().m_step; i++)
-	// {
-	// 	const double u1 = dome.node(ns * nl).state(i, 0);
-	// 	const double u2 = dome.node(ns * nl).state(i, 1);
-	// 	const double u3 = dome.node(ns * nl).state(i, 2);
-	// 	const double ps = dome.solver_static().m_p_data[i];
-	// 	fprintf(file, "%+.6e %+.6e %+.6e %+.6e\n", u1, u2, u3, ps);
-	// }
-	// //close
-	// fclose(file);
+	//data
+	const uint32_t ns = dome.sides();
+	FILE* file = fopen("plot.txt", "w");
+	//save
+	for(uint32_t i = 0; i < dome.analysis()->solver_static_nonlinear()->step(); i++)
+	{
+		const double ps = dome.analysis()->solver_static_nonlinear()->load_data(i);
+		const double u1 = dome.mesh()->node(2 * ns)->state(fea::mesh::nodes::DOF::Translation_1, i);
+		const double u2 = dome.mesh()->node(2 * ns)->state(fea::mesh::nodes::DOF::Translation_2, i);
+		const double u3 = dome.mesh()->node(2 * ns)->state(fea::mesh::nodes::DOF::Translation_3, i);
+		fprintf(file, "%+.6e %+.6e %+.6e %+.6e\n", u1, u2, u3, ps);
+	}
+	//close
+	fclose(file);
 }
 
 //data
