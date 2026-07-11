@@ -120,14 +120,16 @@ void Dome::solve_static(void)
 	//setup
 	setup_model();
 	m_section->compute();
-	analysis()->create_solver(fea::analysis::Type::StaticNonlinear);
+	analysis()->type(fea::analysis::Type::StaticNonlinear);
 	//solver
-	analysis()->solver()->load_combination(0);
-	analysis()->solver()->watch_dof().node(2 * m_sides);
-	analysis()->solver()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
-	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->step_max(1000);
-	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->stop_criteria().state_min(-2 * m_height[1]);
-	dynamic_cast<fea::analysis::StaticNonlinear*>(analysis()->solver())->stop_criteria().add_type(math::solvers::StopCriteria::Type::StateLimitMinimum);
+	analysis()->solver_static_nonlinear()->step_max(1000);
+	analysis()->solver_static_nonlinear()->load_combination(0);
+	//watch dof
+	analysis()->solver_static_nonlinear()->watch_dof().node(2 * m_sides);
+	analysis()->solver_static_nonlinear()->watch_dof().dof(fea::mesh::nodes::DOF::Translation_3);
+	//stop criteria
+	analysis()->solver_static_nonlinear()->stop_criteria().state_min(-2 * m_height[1]);
+	analysis()->solver_static_nonlinear()->stop_criteria().add_type(math::solvers::StopCriteria::Type::StateLimitMinimum);
 	//solve
 	solve();
 	//save

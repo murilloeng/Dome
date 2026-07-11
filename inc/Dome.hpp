@@ -67,7 +67,6 @@ private:
 
 	//data
 	using fea::Model::solve, fea::Model::compute;
-	using fea::Model::mesh, fea::Model::boundary, fea::Model::analysis;
 
 	//data
 	uint32_t m_sides;

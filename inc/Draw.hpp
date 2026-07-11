@@ -35,11 +35,13 @@ private:
 	void update(void) override;
 
 	//setup
+	void setup_loads(void);
 	void setup_nodes(void);
 	void setup_elements(void);
 	void setup_supports(void);
 
 	//update
+	void update_loads(void);
 	void update_nodes(void);
 	void update_elements(void);
 	void update_supports(void);
