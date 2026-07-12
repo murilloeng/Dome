@@ -53,10 +53,10 @@ exe : fea canvas $(out)
 	@echo 'executable build - $(mode): complete!'
 
 fea :
-	+@cd ../FEA && $(MAKE) -f Makefile m=$m lib
+	+@cd ../FEA && $(MAKE) -f Makefile lib m=$m
 
 canvas :
-	+@cd ../Canvas && $(MAKE) -f Makefile m=$m lib
+	+@cd ../Canvas && $(MAKE) -f Makefile lib m=$m
 
 draw :
 	@python3 draw.py
